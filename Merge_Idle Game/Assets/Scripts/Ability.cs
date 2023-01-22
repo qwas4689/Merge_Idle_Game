@@ -13,7 +13,6 @@ public class Ability : SingletonBehaviour<Ability>
      * 보유 가능한 무기 수 int
      * 
      */
-
     
     /// <summary>
     /// 공격력
@@ -49,8 +48,6 @@ public class Ability : SingletonBehaviour<Ability>
     /// 최대 가질 수 있는 무기의 수
     /// </summary>
     public int MaxHasWeapon { get; private set; } = 20;
-
-
 
     private void Awake()
     {
