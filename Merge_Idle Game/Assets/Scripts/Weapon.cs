@@ -7,15 +7,11 @@ public class Weapon : MonoBehaviour
 {
     [SerializeField] private SpriteRenderer _spriteRenderer;
     [SerializeField] private SpriteAtlas _spriteAtlas;
-    [SerializeField] private Ability _ability;
+
+    private const string WEAPON = "Weapon_";
 
     void Start()
     {
-        _spriteRenderer.sprite = _spriteAtlas.GetSprite("Weapon_" + _ability.WeaponLevel);
-    }
-
-    void Update()
-    {
-        
+        _spriteRenderer.sprite = _spriteAtlas.GetSprite(WEAPON + Ability.Instance.WeaponLevel);
     }
 }

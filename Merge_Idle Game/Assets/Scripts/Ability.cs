@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Ability : MonoBehaviour
+public class Ability : SingletonBehaviour<Ability>
 {
     /* 어빌리티 내용
      * 
@@ -44,6 +44,11 @@ public class Ability : MonoBehaviour
     /// 가질 수 있는 무기의 수
     /// </summary>
     public int CanHasWeapon { get; set; }
+
+    /// <summary>
+    /// 최대 가질 수 있는 무기의 수
+    /// </summary>
+    public int MaxHasWeapon { get; private set; } = 20;
 
 
 
