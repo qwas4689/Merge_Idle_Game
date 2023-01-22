@@ -1,0 +1,130 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Weapons
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings: []
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 1
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: f5ca9985ff2c77c4e8efa7fa839b59d8, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: -673984087, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: 1056409417, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: -720166791, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: 2065150208, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: -1606381758, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: -1125266740, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: -977160359, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: -2141834598, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: -272537560, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: 792445842, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: 1021739028, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: 1257634927, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: 1003055032, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: 63498992, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: -1917987754, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: 307586565, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: 1306670922, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: 830424584, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: -934447498, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: -651030228, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: 227334154, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: 432014620, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: 1060860029, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: -210573517, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: -619326405, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: -904940545, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: 1575407714, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: 1059311746, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: 839967008, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: 1280564038, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: 1713858835, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: 1434174775, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: -2009852813, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: 1146934106, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: -259806884, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: -1137713181, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: -1951150098, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: 915210263, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: -1797453950, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: -366329080, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: -877054530, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: -1810446463, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  - {fileID: -517621747, guid: 2679478949a68a4419bea61bebb64667, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - Weapon_28
+  - Weapon_29
+  - Weapon_8
+  - Weapon_20
+  - Weapon_9
+  - Weapon_21
+  - Weapon_22
+  - Weapon_42
+  - Weapon_23
+  - Weapon_24
+  - Weapon_40
+  - Weapon_25
+  - Weapon_41
+  - Weapon_2
+  - Weapon_26
+  - Weapon_3
+  - Weapon_27
+  - Weapon_0
+  - Weapon_1
+  - Weapon_6
+  - Weapon_7
+  - Weapon_4
+  - Weapon_5
+  - Weapon_11
+  - Weapon_10
+  - Weapon_13
+  - Weapon_12
+  - Weapon_15
+  - Weapon_14
+  - Weapon_17
+  - Weapon_16
+  - Weapon_19
+  - Weapon_18
+  - Weapon_39
+  - Weapon_38
+  - Weapon_33
+  - Weapon_32
+  - Weapon_31
+  - Weapon_30
+  - Weapon_37
+  - Weapon_36
+  - Weapon_35
+  - Weapon_34
+  m_RenderDataMap: {}
+  m_Tag: Weapons
+  m_IsVariant: 0

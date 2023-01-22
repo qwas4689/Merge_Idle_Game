@@ -4,13 +4,24 @@ using UnityEngine;
 
 public class ObjectPool : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [SerializeField] private Ability _ability;
+    [SerializeField] private GameObject[] _gameObject;
 
-    // Update is called once per frame
+    private const int WEAPON = 0;
+
+    private List<GameObject> _gameObjects;
+
+    private void Start()
+    {
+        _gameObjects = new List<GameObject>(_ability.MaxCanMake);
+
+        for (int i = 0; i < _ability.NowCanMaskCount; ++i)
+        {
+            _gameObjects.Add(_gameObject[WEAPON]);
+            _gameObjects[i].SetActive(false);
+        }
+    }
+    
     void Update()
     {
         
