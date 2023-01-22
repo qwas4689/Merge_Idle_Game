@@ -5,6 +5,8 @@ using UnityEngine.EventSystems;
 
 public class ClickAndDrop : MonoBehaviour
 {
+    [SerializeField] private ButtonEvent _buttonEvent;
+
     private List<GameObject> _weaponSetActiveTrue = new List<GameObject>();
     private Vector2 _touchPos;
     private Touch _touch;
@@ -79,16 +81,22 @@ public class ClickAndDrop : MonoBehaviour
                 // 터치 땠을 때
                 if (_touch.phase == TouchPhase.Ended)
                 {
-                    // 땠을 때 선택된 것과 인접한 위치에 무기가 있으면 머지 함
-                    for (int i = 0; i < _weaponSetActiveTrue.Count; ++i)
+                    if (_select != null)
                     {
-                        if (TouchWeapon(_select.transform.position, i))
+                        // 땠을 때 선택된 것과 인접한 위치에 무기가 있으면 머지 함
+                        for (int i = 0; i < _weaponSetActiveTrue.Count; ++i)
                         {
-                            ObjectPool.Instance.WeaponPool[i].SetActive(false);
-                            ++_select.GetComponent<Weapon>().WeaponLevel;
+                            if (TouchWeapon(_select.transform.position, i))
+                            {
+                                _select.SetActive(false);
+                                ++_weaponSetActiveTrue[i].GetComponent<Weapon>().WeaponLevel;
+
+                                --_buttonEvent.WeaponCounts;
+
+                                break;
+                            }
                         }
                     }
-
                     // 셀렉트의 무기 인덱스를 하나 올려주고
                     // 그것과 인접한 것을 셋엑티프 false 로 한다
 

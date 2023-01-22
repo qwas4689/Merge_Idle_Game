@@ -15,6 +15,8 @@ public class ButtonEvent : MonoBehaviour
     private const int CREATE_WEAPON_BUTTON = 0;
 
     private int _weaponCounts = -1;
+    public int WeaponCounts { get { return _weaponCounts; } set { _weaponCounts = value; } }
+
     private IEnumerator _moveLerpWeapon;
 
     void Awake()
