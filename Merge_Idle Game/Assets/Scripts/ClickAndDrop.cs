@@ -5,9 +5,8 @@ using UnityEngine.EventSystems;
 
 public class ClickAndDrop : MonoBehaviour
 {
-    [SerializeField] private ButtonEvent _buttonEvent;
 
-    private List<GameObject> _weaponSetActiveTrue = new List<GameObject>();
+    //private List<GameObject> _weaponSetActiveTrue = new List<GameObject>();
     private Vector2 _touchPos;
     private Touch _touch;
     private GameObject _select;
@@ -35,25 +34,20 @@ public class ClickAndDrop : MonoBehaviour
                 // 터치 눌렀을 때
                 if (_touch.phase == TouchPhase.Began)
                 {
-                    for (int i = 0; i < ObjectPool.Instance.WeaponPool.Count; ++i)
-                    {
-                        if (ObjectPool.Instance.WeaponPool[i].activeSelf == false)
-                        {
-                            break;
-                        }
-                        else
-                        {
-                            // 활성화 되어 있는 무기만 리스트에 추가
-                            _weaponSetActiveTrue.Add(ObjectPool.Instance.WeaponPool[i]);
-                        }
-                    }
+                    //for (int i = 0; i < ObjectPool.Instance.transform.childCount; ++i)
+                    //{
+                    //    if (ObjectPool.Instance.WeaponPool[i].activeSelf == true)
+                    //    {
+                    //        _weaponSetActiveTrue.Add(ObjectPool.Instance.WeaponPool[i]);
+                    //    }
+                    //}
 
                     // 무기를 터치했는지 확인
-                    for (int i = 0; i < _weaponSetActiveTrue.Count; ++i)
+                    for (int i = 0; i < Ability.Instance.NowCanMaskCount + Ability.Instance.MaxHasWeapon; ++i)
                     {
-                        if (TouchWeapon(_touchPos, i))
+                        if (TouchWeapon(_touchPos, ObjectPool.Instance.WeaponPool[i].transform.position))
                         {
-                            _select = _weaponSetActiveTrue[i];
+                            _select = ObjectPool.Instance.WeaponPool[i];
                             break;
                         }
                     }
@@ -84,19 +78,26 @@ public class ClickAndDrop : MonoBehaviour
                     if (_select != null)
                     {
                         // 땠을 때 선택된 것과 인접한 위치에 무기가 있으면 머지 함
-                        for (int i = 0; i < _weaponSetActiveTrue.Count; ++i)
+                        for (int i = 0; i < Ability.Instance.NowCanMaskCount + Ability.Instance.MaxHasWeapon; ++i)
                         {
-                            if (TouchWeapon(_select.transform.position, i))
+                            if (TouchWeapon(_select.transform.position , ObjectPool.Instance.WeaponPool[i].transform.position))
                             {
-                                _select.SetActive(false);
-                                ++_weaponSetActiveTrue[i].GetComponent<Weapon>().WeaponLevel;
-
-                                --_buttonEvent.WeaponCounts;
-
-                                break;
+                                // 선택한 것은 탐색 제외
+                                if (_select != ObjectPool.Instance.WeaponPool[i])
+                                {
+                                    // 선택한 것과 영역 주변 영역의 무기레벨이 같으면 레벨업
+                                    if (_select.GetComponent<Weapon>().WeaponLevel == ObjectPool.Instance.WeaponPool[i].GetComponent<Weapon>().WeaponLevel)
+                                    {
+                                        ++ObjectPool.Instance.WeaponPool[i].GetComponent<Weapon>().WeaponLevel;
+                                        _select.SetActive(false);
+                                        break;
+                                    }
+                                }
                             }
                         }
                     }
+                    // 지금 문제가 어쨋든 터치한 것과
+
                     // 셀렉트의 무기 인덱스를 하나 올려주고
                     // 그것과 인접한 것을 셋엑티프 false 로 한다
 
@@ -112,6 +113,11 @@ public class ClickAndDrop : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 터치되고있는 영역이 무기가 있을 수 있는 범위면 true 아니면 false
+    /// </summary>
+    /// <param name="touchPos">터치한 곳 월드좌표</param>
+    /// <returns></returns>
     private bool CanMoveArea(Touch touchPos)
     {
         return touchPos.position.x < X_POS_MAX && touchPos.position.x > X_POS_MIN && touchPos.position.y < Y_POS_MAX && touchPos.position.y > Y_POS_MIN;
@@ -123,19 +129,25 @@ public class ClickAndDrop : MonoBehaviour
     private void Init()
     {
         _touchPos = Vector2.zero;
-        _weaponSetActiveTrue.Clear();
+        //_weaponSetActiveTrue.Clear();
     }
 
     /// <summary>
     /// 선택한 무기가 클릭한 위치에 인접하면 true 아니면 false
     /// </summary>
-    /// <param name="i">리스트의 인덱스</param>
+    /// <param name="touchPos">터치한 곳의 월드좌표</param>
+    /// <param name="weaponPos">무기 았는 좌표</param>
     /// <returns></returns>
-    private bool TouchWeapon(Vector2 touchPos, int i)
+    private bool TouchWeapon(Vector2 touchPos, Vector2 weaponPos)
     {
         float offset = 0.1f;
 
-        return touchPos.x - offset < _weaponSetActiveTrue[i].transform.position.x && _weaponSetActiveTrue[i].transform.position.x < touchPos.x + offset && touchPos.y - offset < _weaponSetActiveTrue[i].transform.position.y && _weaponSetActiveTrue[i].transform.position.y < touchPos.y + offset;
+        if (touchPos.x - offset < weaponPos.x && weaponPos.x < touchPos.x + offset && touchPos.y - offset < weaponPos.y && weaponPos.y < touchPos.y + offset)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     /// <summary>
