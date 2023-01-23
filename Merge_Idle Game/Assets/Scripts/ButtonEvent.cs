@@ -14,10 +14,7 @@ public class ButtonEvent : MonoBehaviour
 
     private const int CREATE_WEAPON_BUTTON = 0;
 
-    private int _weaponCounts = -1;
-    public int WeaponCounts { get { return _weaponCounts; } set { _weaponCounts = value; } }
-
-    private IEnumerator _moveLerpWeapon;
+    public int WeaponCounts { get; set; } = -1;
 
     void Awake()
     {
@@ -31,9 +28,9 @@ public class ButtonEvent : MonoBehaviour
 
     private void CreateWeapon()
     {
-        if (_weaponCounts < Ability.Instance.NowCanMaskCount - 1)
+        if (WeaponCounts < Ability.Instance.NowCanMaskCount - 1)
         {
-            _weaponCounts = (_weaponCounts + 1) % ObjectPool.Instance.WeaponPool.Count;
+            WeaponCounts = (WeaponCounts + 1) % ObjectPool.Instance.WeaponPool.Count;
         }
         else
         {
@@ -42,7 +39,15 @@ public class ButtonEvent : MonoBehaviour
 
         Vector2 pos = new Vector2(Random.Range(-X_POS, X_POS), Random.Range(Y_POS_MIN, Y_POS_MAX));
 
-        StartCoroutine(MoveLerpWeapon(ObjectPool.Instance.WeaponPool[_weaponCounts], pos));
+        for (int i = 0; i < Ability.Instance.NowCanMaskCount; ++i)
+        {
+            if (ObjectPool.Instance.WeaponPool[i].activeSelf == false)
+            {
+                StartCoroutine(MoveLerpWeapon(ObjectPool.Instance.WeaponPool[i], pos));
+                break;
+            }
+        }
+
     }
 
     private IEnumerator MoveLerpWeapon(GameObject weapon, Vector3 movePos)

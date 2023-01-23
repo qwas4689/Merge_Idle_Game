@@ -5,8 +5,8 @@ using UnityEngine.EventSystems;
 
 public class ClickAndDrop : MonoBehaviour
 {
+    [SerializeField] ButtonEvent _buttonEvent;
 
-    //private List<GameObject> _weaponSetActiveTrue = new List<GameObject>();
     private Vector2 _touchPos;
     private Touch _touch;
     private GameObject _select;
@@ -15,6 +15,8 @@ public class ClickAndDrop : MonoBehaviour
     private const float X_POS_MAX = 1070f;
     private const float Y_POS_MIN = 350f;
     private const float Y_POS_MAX = 1150f;
+
+    private Vector2 _startPos = new Vector2(0, -3.3f);
 
     private void Update()
     {
@@ -34,14 +36,6 @@ public class ClickAndDrop : MonoBehaviour
                 // 터치 눌렀을 때
                 if (_touch.phase == TouchPhase.Began)
                 {
-                    //for (int i = 0; i < ObjectPool.Instance.transform.childCount; ++i)
-                    //{
-                    //    if (ObjectPool.Instance.WeaponPool[i].activeSelf == true)
-                    //    {
-                    //        _weaponSetActiveTrue.Add(ObjectPool.Instance.WeaponPool[i]);
-                    //    }
-                    //}
-
                     // 무기를 터치했는지 확인
                     for (int i = 0; i < Ability.Instance.NowCanMaskCount + Ability.Instance.MaxHasWeapon; ++i)
                     {
@@ -89,17 +83,16 @@ public class ClickAndDrop : MonoBehaviour
                                     if (_select.GetComponent<Weapon>().WeaponLevel == ObjectPool.Instance.WeaponPool[i].GetComponent<Weapon>().WeaponLevel)
                                     {
                                         ++ObjectPool.Instance.WeaponPool[i].GetComponent<Weapon>().WeaponLevel;
+                                        _select.transform.position = _startPos;
+                                        _select.GetComponent<Weapon>().WeaponLevel = Ability.Instance.WeaponLevel;
                                         _select.SetActive(false);
+                                        --_buttonEvent.WeaponCounts;
                                         break;
                                     }
                                 }
                             }
                         }
                     }
-                    // 지금 문제가 어쨋든 터치한 것과
-
-                    // 셀렉트의 무기 인덱스를 하나 올려주고
-                    // 그것과 인접한 것을 셋엑티프 false 로 한다
 
                     // 초기화 및 리스트 초기화
                     EndTouchAndClear();
@@ -129,7 +122,6 @@ public class ClickAndDrop : MonoBehaviour
     private void Init()
     {
         _touchPos = Vector2.zero;
-        //_weaponSetActiveTrue.Clear();
     }
 
     /// <summary>
