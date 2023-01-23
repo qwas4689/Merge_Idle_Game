@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -16,70 +16,72 @@ public class ClickAndDrop : MonoBehaviour
     private const float Y_POS_MIN = 350f;
     private const float Y_POS_MAX = 1150f;
 
+    private const float TOUCH_OFFSET = 0.1f;
+    private const float MERGE_OFFEST = 0.5F;
+
     private Vector2 _startPos = new Vector2(0, -3.3f);
 
     private void Update()
     {
         if (Input.touchCount > 0)
         {
-            // 1È¸ ÅÍÄ¡¸¸ ¹ŞÀ½
+            // 1íšŒ í„°ì¹˜ë§Œ ë°›ìŒ
             _touch = Input.GetTouch(0);
-            // ÅÍÄ¡ÇÑ °÷À» ¿ùµåÁÂÇ¥·Î ¹Ş¾Æ ¿È
+            // í„°ì¹˜í•œ ê³³ì„ ì›”ë“œì¢Œí‘œë¡œ ë°›ì•„ ì˜´
             _touchPos = Camera.main.ScreenToWorldPoint(_touch.position);
 
-            // Áö±İ UI°¡ »ı¼º ÇÒ ¼ö ÀÖ´Â UI¸é ÀÌ°Å ½ÇÇà ¾Æ´Ï¸é return
+            // ì§€ê¸ˆ UIê°€ ìƒì„± í•  ìˆ˜ ìˆëŠ” UIë©´ ì´ê±° ì‹¤í–‰ ì•„ë‹ˆë©´ return
 
 
-            // ¹«±â°¡ ÀÖÀ» ¼ö ÀÖ´Â À§Ä¡¸¸ ÅÍÁö¸¦ ¹ŞÀ½
+            // ë¬´ê¸°ê°€ ìˆì„ ìˆ˜ ìˆëŠ” ìœ„ì¹˜ë§Œ í„°ì§€ë¥¼ ë°›ìŒ
             if (CanMoveArea(_touch))
             {
-                // ÅÍÄ¡ ´­·¶À» ¶§
+                // í„°ì¹˜ ëˆŒë €ì„ ë•Œ
                 if (_touch.phase == TouchPhase.Began)
                 {
-                    // ¹«±â¸¦ ÅÍÄ¡Çß´ÂÁö È®ÀÎ
+                    // ë¬´ê¸°ë¥¼ í„°ì¹˜í–ˆëŠ”ì§€ í™•ì¸
                     for (int i = 0; i < Ability.Instance.NowCanMaskCount + Ability.Instance.MaxHasWeapon; ++i)
                     {
-                        if (TouchWeapon(_touchPos, ObjectPool.Instance.WeaponPool[i].transform.position))
+                        if (TouchWeapon(_touchPos, ObjectPool.Instance.WeaponPool[i].transform.position, TOUCH_OFFSET))
                         {
                             _select = ObjectPool.Instance.WeaponPool[i];
                             break;
                         }
                     }
 
-
                     EndTouch();
                 }
 
-                // µå·¡±× »óÅÂ
+                // ë“œë˜ê·¸ ìƒíƒœ
                 if (_touch.phase == TouchPhase.Moved)
                 {
-                    // ¿µ¿ªÀ» ¹ş¾î³ª¸é µå·¡±×»óÅÂ Ç®¸²
+                    // ì˜ì—­ì„ ë²—ì–´ë‚˜ë©´ ë“œë˜ê·¸ìƒíƒœ í’€ë¦¼
                     if (!CanMoveArea(_touch))
                     {
                         EndTouchAndClear();
                     }
 
-                    // ¼±ÅÃµÈ°Ô ÀÖÀ»¶§¸¸ ¿òÁ÷ÀÓ
+                    // ì„ íƒëœê²Œ ìˆì„ë•Œë§Œ ì›€ì§ì„
                     if (_select != null)
                     {
                         _select.transform.position = _touchPos;
                     }
                 }
 
-                // ÅÍÄ¡ ¶®À» ¶§
+                // í„°ì¹˜ ë• ì„ ë•Œ
                 if (_touch.phase == TouchPhase.Ended)
                 {
                     if (_select != null)
                     {
-                        // ¶®À» ¶§ ¼±ÅÃµÈ °Í°ú ÀÎÁ¢ÇÑ À§Ä¡¿¡ ¹«±â°¡ ÀÖÀ¸¸é ¸ÓÁö ÇÔ
+                        // ë• ì„ ë•Œ ì„ íƒëœ ê²ƒê³¼ ì¸ì ‘í•œ ìœ„ì¹˜ì— ë¬´ê¸°ê°€ ìˆìœ¼ë©´ ë¨¸ì§€ í•¨
                         for (int i = 0; i < Ability.Instance.NowCanMaskCount + Ability.Instance.MaxHasWeapon; ++i)
                         {
-                            if (TouchWeapon(_select.transform.position , ObjectPool.Instance.WeaponPool[i].transform.position))
+                            if (TouchWeapon(_select.transform.position , ObjectPool.Instance.WeaponPool[i].transform.position, MERGE_OFFEST))
                             {
-                                // ¼±ÅÃÇÑ °ÍÀº Å½»ö Á¦¿Ü
+                                // ì„ íƒí•œ ê²ƒì€ íƒìƒ‰ ì œì™¸
                                 if (_select != ObjectPool.Instance.WeaponPool[i])
                                 {
-                                    // ¼±ÅÃÇÑ °Í°ú ¿µ¿ª ÁÖº¯ ¿µ¿ªÀÇ ¹«±â·¹º§ÀÌ °°À¸¸é ·¹º§¾÷
+                                    // ì„ íƒí•œ ê²ƒê³¼ ì˜ì—­ ì£¼ë³€ ì˜ì—­ì˜ ë¬´ê¸°ë ˆë²¨ì´ ê°™ìœ¼ë©´ ë ˆë²¨ì—…
                                     if (_select.GetComponent<Weapon>().WeaponLevel == ObjectPool.Instance.WeaponPool[i].GetComponent<Weapon>().WeaponLevel)
                                     {
                                         ++ObjectPool.Instance.WeaponPool[i].GetComponent<Weapon>().WeaponLevel;
@@ -94,22 +96,22 @@ public class ClickAndDrop : MonoBehaviour
                         }
                     }
 
-                    // ÃÊ±âÈ­ ¹× ¸®½ºÆ® ÃÊ±âÈ­
+                    // ì´ˆê¸°í™” ë° ë¦¬ìŠ¤íŠ¸ ì´ˆê¸°í™”
                     EndTouchAndClear();
                 }
             }
             else
             {
-                // ÃÊ±âÈ­
+                // ì´ˆê¸°í™”
                 Init();
             }
         }
     }
 
     /// <summary>
-    /// ÅÍÄ¡µÇ°íÀÖ´Â ¿µ¿ªÀÌ ¹«±â°¡ ÀÖÀ» ¼ö ÀÖ´Â ¹üÀ§¸é true ¾Æ´Ï¸é false
+    /// í„°ì¹˜ë˜ê³ ìˆëŠ” ì˜ì—­ì´ ë¬´ê¸°ê°€ ìˆì„ ìˆ˜ ìˆëŠ” ë²”ìœ„ë©´ true ì•„ë‹ˆë©´ false
     /// </summary>
-    /// <param name="touchPos">ÅÍÄ¡ÇÑ °÷ ¿ùµåÁÂÇ¥</param>
+    /// <param name="touchPos">í„°ì¹˜í•œ ê³³ ì›”ë“œì¢Œí‘œ</param>
     /// <returns></returns>
     private bool CanMoveArea(Touch touchPos)
     {
@@ -117,7 +119,7 @@ public class ClickAndDrop : MonoBehaviour
     }
 
     /// <summary>
-    /// ÅÍÄ¡ÇÑ À§Ä¡ ¹× ¸®½ºÆ® ÃÊ±âÈ­ 
+    /// í„°ì¹˜í•œ ìœ„ì¹˜ ë° ë¦¬ìŠ¤íŠ¸ ì´ˆê¸°í™” 
     /// </summary>
     private void Init()
     {
@@ -125,15 +127,13 @@ public class ClickAndDrop : MonoBehaviour
     }
 
     /// <summary>
-    /// ¼±ÅÃÇÑ ¹«±â°¡ Å¬¸¯ÇÑ À§Ä¡¿¡ ÀÎÁ¢ÇÏ¸é true ¾Æ´Ï¸é false
+    /// ì„ íƒí•œ ë¬´ê¸°ê°€ í´ë¦­í•œ ìœ„ì¹˜ì— ì¸ì ‘í•˜ë©´ true ì•„ë‹ˆë©´ false
     /// </summary>
-    /// <param name="touchPos">ÅÍÄ¡ÇÑ °÷ÀÇ ¿ùµåÁÂÇ¥</param>
-    /// <param name="weaponPos">¹«±â ¾Ò´Â ÁÂÇ¥</param>
+    /// <param name="touchPos">í„°ì¹˜í•œ ê³³ì˜ ì›”ë“œì¢Œí‘œ</param>
+    /// <param name="weaponPos">ë¬´ê¸° ì•˜ëŠ” ì¢Œí‘œ</param>
     /// <returns></returns>
-    private bool TouchWeapon(Vector2 touchPos, Vector2 weaponPos)
+    private bool TouchWeapon(Vector2 touchPos, Vector2 weaponPos, float offset)
     {
-        float offset = 0.1f;
-
         if (touchPos.x - offset < weaponPos.x && weaponPos.x < touchPos.x + offset && touchPos.y - offset < weaponPos.y && weaponPos.y < touchPos.y + offset)
         {
             return true;
@@ -143,7 +143,7 @@ public class ClickAndDrop : MonoBehaviour
     }
 
     /// <summary>
-    /// Å¬¸¯ÇßÀ» ¶§ ¼±ÅÃµÈ ¹«±â°¡ ¾øÀ¸¸é È£Ãâ
+    /// í´ë¦­í–ˆì„ ë•Œ ì„ íƒëœ ë¬´ê¸°ê°€ ì—†ìœ¼ë©´ í˜¸ì¶œ
     /// </summary>
     private void EndTouch()
     {
@@ -154,7 +154,7 @@ public class ClickAndDrop : MonoBehaviour
     }
 
     /// <summary>
-    /// ÅÍÄ¡°¡ ³¡³µÀ» ¶§ È£Ãâ
+    /// í„°ì¹˜ê°€ ëë‚¬ì„ ë•Œ í˜¸ì¶œ
     /// </summary>
     private void EndTouchAndClear()
     {

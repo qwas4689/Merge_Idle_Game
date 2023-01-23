@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,7 +6,6 @@ using UnityEngine.UI;
 public class ButtonEvent : MonoBehaviour
 {
     [SerializeField] Button[] _buttons;
-    [SerializeField] RectTransform _weponArea;
 
     private const float X_POS = 2.5f;
     private const float Y_POS_MIN = -2f;

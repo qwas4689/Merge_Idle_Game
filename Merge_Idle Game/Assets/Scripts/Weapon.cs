@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.U2D;
@@ -31,5 +31,5 @@ public class Weapon : MonoBehaviour
         }
     }
 
-    // ¾îºô¸®Æ¼·Î ÃÖ¼Ò ¹«±â ·¹º§À» ¿Ã¸®¸é ¹«±âÀÇ ½ºÇÁ¶óÀÌÆ®¸¦ ¹Ù²ãÁà¾ß ÇÔ 
+    // ì–´ë¹Œë¦¬í‹°ë¡œ ìµœì†Œ ë¬´ê¸° ë ˆë²¨ì„ ì˜¬ë¦¬ë©´ ë¬´ê¸°ì˜ ìŠ¤í”„ë¼ì´íŠ¸ë¥¼ ë°”ê¿”ì¤˜ì•¼ í•¨ 
 }

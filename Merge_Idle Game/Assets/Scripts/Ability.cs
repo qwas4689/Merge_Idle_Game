@@ -1,51 +1,51 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Ability : SingletonBehaviour<Ability>
 {
-    /* ¾îºô¸®Æ¼ ³»¿ë
+    /* ì–´ë¹Œë¦¬í‹° ë‚´ìš©
      * 
-     * °ø°İ·Â int
-     * »ı»ê¼Óµµ Áõ°¡ (µ¨Å¸Å¸ÀÓ¿¡ °öÇØ¼­ ±âÁØÀ¸·Î »ı»ê¼Óµµ¸¦ Áõ°¡½ÃÅ³°ÅÀÓ) flaot
-     * Á¦ÀÛ°¡´ÉÇÑ ·¹º§
-     * Á¦ÀÛ°¡´É ÃÖ´ëÄ¡ int
-     * º¸À¯ °¡´ÉÇÑ ¹«±â ¼ö int
+     * ê³µê²©ë ¥ int ë¬´ê¸° ë ˆë²¨ì— ë¹„ë¡€í•´ì„œ ì˜¬ë¦¬ë©´ ë  ê²ƒ ê°™ìŒ
+     * ìƒì‚°ì†ë„ ì¦ê°€ (ë¸íƒ€íƒ€ì„ì— ê³±í•´ì„œ ê¸°ì¤€ìœ¼ë¡œ ìƒì‚°ì†ë„ë¥¼ ì¦ê°€ì‹œí‚¬ê±°ì„) flaot
+     * ì œì‘ê°€ëŠ¥í•œ ë ˆë²¨ 
+     * ì œì‘ê°€ëŠ¥ ìµœëŒ€ì¹˜ int 
+     * ë³´ìœ  ê°€ëŠ¥í•œ ë¬´ê¸° ìˆ˜ int 
      * 
      */
     
     /// <summary>
-    /// °ø°İ·Â
+    /// ê³µê²©ë ¥
     /// </summary>
     public int AttackPower { get; set; }
     
     /// <summary>
-    /// Á¦ÀÛ ¼Óµµ
+    /// ì œì‘ ì†ë„
     /// </summary>
     public float MakeSpeed { get; set; }
     
     /// <summary>
-    /// Á¦ÀÛ °¡´ÉÇÑ ¹«±âÀÇ ·¹º§
+    /// ì œì‘ ê°€ëŠ¥í•œ ë¬´ê¸°ì˜ ë ˆë²¨
     /// </summary>
     public int WeaponLevel { get; set; }
 
     /// <summary>
-    /// ÃÖ´ë Á¦ÀÛ °¡´ÉÇÑ ¹«±âÀÇ ¼ö
+    /// ìµœëŒ€ ì œì‘ ê°€ëŠ¥í•œ ë¬´ê¸°ì˜ ìˆ˜
     /// </summary>
     public int MaxCanMake { get; private set; } = 20;
 
     /// <summary>
-    /// Áö±İ Á¦ÀÛ °¡´ÉÇÑ ¹«±âÀÇ ¼ö
+    /// ì§€ê¸ˆ ì œì‘ ê°€ëŠ¥í•œ ë¬´ê¸°ì˜ ìˆ˜
     /// </summary>
     public int NowCanMaskCount { get; set; }
 
     /// <summary>
-    /// °¡Áú ¼ö ÀÖ´Â ¹«±âÀÇ ¼ö
+    /// ê°€ì§ˆ ìˆ˜ ìˆëŠ” ë¬´ê¸°ì˜ ìˆ˜
     /// </summary>
     public int CanHasWeapon { get; set; }
 
     /// <summary>
-    /// ÃÖ´ë °¡Áú ¼ö ÀÖ´Â ¹«±âÀÇ ¼ö
+    /// ìµœëŒ€ ê°€ì§ˆ ìˆ˜ ìˆëŠ” ë¬´ê¸°ì˜ ìˆ˜
     /// </summary>
     public int MaxHasWeapon { get; private set; } = 20;
 
@@ -56,9 +56,9 @@ public class Ability : SingletonBehaviour<Ability>
 
     private void Init()
     {
-        // playerPrefs¿¡ ÀúÀåµÈ µ¥ÀÌÅÍ¸¦ ºÒ·¯¿À±â
+        // playerPrefsì— ì €ì¥ëœ ë°ì´í„°ë¥¼ ë¶ˆëŸ¬ì˜¤ê¸°
 
-        // PlayerPrefs ¿¡ µ¥ÀÌÅÍ°¡ ¾øÀ» ½Ã ½ÇÇà
+        // PlayerPrefs ì— ë°ì´í„°ê°€ ì—†ì„ ì‹œ ì‹¤í–‰
         AttackPower = 10;
         MakeSpeed = 0.01f;
         WeaponLevel = 0;
