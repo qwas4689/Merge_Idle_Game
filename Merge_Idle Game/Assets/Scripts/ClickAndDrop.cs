@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 public class ClickAndDrop : MonoBehaviour
 {
     [SerializeField] ButtonEvent _buttonEvent;
+    [SerializeField] GameObject[] _panels;
 
     private Vector2 _touchPos;
     private Touch _touch;
@@ -19,91 +20,96 @@ public class ClickAndDrop : MonoBehaviour
     private const float TOUCH_OFFSET = 0.1f;
     private const float MERGE_OFFEST = 0.5F;
 
+    private const int ABILITY_PANEL = 0;
+    private const int STAGE_PANEL = 1;
+
     private Vector2 _startPos = new Vector2(0, -3.3f);
 
     private void Update()
     {
-        if (Input.touchCount > 0)
+        // 지금 머지 메뉴창일 때 만
+        if (_panels[ABILITY_PANEL].activeSelf == false && _panels[STAGE_PANEL].activeSelf == false)
         {
-            // 1회 터치만 받음
-            _touch = Input.GetTouch(0);
-            // 터치한 곳을 월드좌표로 받아 옴
-            _touchPos = Camera.main.ScreenToWorldPoint(_touch.position);
-
-            // 지금 UI가 생성 할 수 있는 UI면 이거 실행 아니면 return
-
-
-            // 무기가 있을 수 있는 위치만 터지를 받음
-            if (CanMoveArea(_touch))
+            if (Input.touchCount > 0)
             {
-                // 터치 눌렀을 때
-                if (_touch.phase == TouchPhase.Began)
+                // 1회 터치만 받음
+                _touch = Input.GetTouch(0);
+                // 터치한 곳을 월드좌표로 받아 옴
+                _touchPos = Camera.main.ScreenToWorldPoint(_touch.position);
+
+                // 지금 UI가 생성 할 수 있는 UI면 이거 실행 아니면 return
+
+
+                // 무기가 있을 수 있는 위치만 터지를 받음
+                if (CanMoveArea(_touch))
                 {
-                    // 무기를 터치했는지 확인
-                    for (int i = 0; i < Ability.Instance.NowCanMaskCount + Ability.Instance.MaxHasWeapon; ++i)
+                    // 터치 눌렀을 때
+                    if (_touch.phase == TouchPhase.Began)
                     {
-                        if (TouchWeapon(_touchPos, ObjectPool.Instance.WeaponPool[i].transform.position, TOUCH_OFFSET))
+                        // 무기를 터치했는지 확인
+                        for (int i = 0; i < Ability.Instance.NowCanMakeCount + Ability.Instance.MaxHasWeapon; ++i)
                         {
-                            _select = ObjectPool.Instance.WeaponPool[i];
-                            break;
+                            if (TouchWeapon(_touchPos, ObjectPool.Instance.WeaponPool[i].transform.position, TOUCH_OFFSET))
+                            {
+                                _select = ObjectPool.Instance.WeaponPool[i];
+                                break;
+                            }
+                        }
+
+                        EndTouch();
+                    }
+
+                    // 드래그 상태
+                    if (_touch.phase == TouchPhase.Moved)
+                    {
+                        // 영역을 벗어나면 드래그상태 풀림
+                        if (!CanMoveArea(_touch))
+                        {
+                            EndTouchAndClear();
+                        }
+
+                        // 선택된게 있을때만 움직임
+                        if (_select != null)
+                        {
+                            _select.transform.position = _touchPos;
                         }
                     }
 
-                    EndTouch();
-                }
-
-                // 드래그 상태
-                if (_touch.phase == TouchPhase.Moved)
-                {
-                    // 영역을 벗어나면 드래그상태 풀림
-                    if (!CanMoveArea(_touch))
+                    // 터치 땠을 때
+                    if (_touch.phase == TouchPhase.Ended)
                     {
-                        EndTouchAndClear();
-                    }
-
-                    // 선택된게 있을때만 움직임
-                    if (_select != null)
-                    {
-                        _select.transform.position = _touchPos;
-                    }
-                }
-
-                // 터치 땠을 때
-                if (_touch.phase == TouchPhase.Ended)
-                {
-                    if (_select != null)
-                    {
-                        // 땠을 때 선택된 것과 인접한 위치에 무기가 있으면 머지 함
-                        for (int i = 0; i < Ability.Instance.NowCanMaskCount + Ability.Instance.MaxHasWeapon; ++i)
+                        if (_select != null && _select.GetComponent<Weapon>().WeaponLevel != Ability.Instance.MaxWeaponLevel)
                         {
-                            if (TouchWeapon(_select.transform.position , ObjectPool.Instance.WeaponPool[i].transform.position, MERGE_OFFEST))
+                            // 땠을 때 선택된 것과 인접한 위치에 무기가 있으면 머지 함
+                            for (int i = 0; i < Ability.Instance.NowCanMakeCount + Ability.Instance.MaxHasWeapon; ++i)
                             {
-                                // 선택한 것은 탐색 제외
-                                if (_select != ObjectPool.Instance.WeaponPool[i])
+                                if (TouchWeapon(_select.transform.position, ObjectPool.Instance.WeaponPool[i].transform.position, MERGE_OFFEST))
                                 {
-                                    // 선택한 것과 영역 주변 영역의 무기레벨이 같으면 레벨업
-                                    if (_select.GetComponent<Weapon>().WeaponLevel == ObjectPool.Instance.WeaponPool[i].GetComponent<Weapon>().WeaponLevel)
+                                    // 선택한 것은 탐색 제외
+                                    if (_select != ObjectPool.Instance.WeaponPool[i])
                                     {
-                                        ++ObjectPool.Instance.WeaponPool[i].GetComponent<Weapon>().WeaponLevel;
-                                        _select.transform.position = _startPos;
-                                        _select.GetComponent<Weapon>().WeaponLevel = Ability.Instance.WeaponLevel;
-                                        _select.SetActive(false);
-                                        --_buttonEvent.WeaponCounts;
-                                        break;
+                                        // 선택한 것과 영역 주변 영역의 무기레벨이 같으면 레벨업
+                                        if (_select.GetComponent<Weapon>().WeaponLevel == ObjectPool.Instance.WeaponPool[i].GetComponent<Weapon>().WeaponLevel)
+                                        {
+                                            ++ObjectPool.Instance.WeaponPool[i].GetComponent<Weapon>().WeaponLevel;
+                                            _select.transform.position = _startPos;
+                                            _select.SetActive(false);
+                                            break;
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
 
-                    // 초기화 및 리스트 초기화
-                    EndTouchAndClear();
+                        // 초기화 및 리스트 초기화
+                        EndTouchAndClear();
+                    }
                 }
-            }
-            else
-            {
-                // 초기화
-                Init();
+                else
+                {
+                    // 초기화
+                    Init();
+                }
             }
         }
     }
