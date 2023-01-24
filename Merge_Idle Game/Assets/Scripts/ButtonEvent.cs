@@ -58,6 +58,13 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
     private Vector3 _equipWeaponPos = new Vector3(0f, 0.95f, 0f);
     private int _equipWeaponLevel;
 
+    private const float SORT_POS_X = 1f;
+    private const float SORT_POS_Y = -0.8f;
+    private Vector2 _pos = new Vector2(-2f, -0.3f);
+    private Vector2 _constPos = new Vector2(-2, -0.3f);
+    private Vector2 _posX = new Vector2(SORT_POS_X, 0f);
+    private Vector2 _posY = new Vector2(-4f, SORT_POS_Y);
+
     private void Awake()
     {
         foreach (Button button in _buttons)
@@ -86,9 +93,7 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
         UpdateText(_abilityTexts[CAN_HAS_WEAPON], string.Empty, Ability.Instance.CanHasWeapon);
         UpdateText(_abilityTexts[CREATE_WEAPON], Ability.Instance.NowCanMakeCount.ToString() + " / " + Ability.Instance.NowCanMakeMaxCount.ToString());
 
-        _posX = new Vector2(SORT_POS_X, 0f);
-        _posY = new Vector2(0f, SORT_POS_Y);
-        _posChange = new Vector2(-4f, 0f);
+
     }
 
     /// <summary>
@@ -132,6 +137,8 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
                 break;
             }
         }
+
+        _clickAndDrop.IsSort = false;
     }
 
     /// <summary>
@@ -274,39 +281,39 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
             return;
         }
 
-        MySort(sortList, Ability.Instance.WeaponLevel);
+        MySort(sortList);
 
+        Debug.Log(_sortList.Count);
+
+        _pos = _constPos;
         _clickAndDrop.IsSort = true;
+        _equipWeaponLevel = 0;
+        _sortList.Clear();
     }
 
-    public void UpdateText(TextMeshProUGUI text, string constStr = "", int? num = null)
-    {
-        text.text = constStr + num;
-    }
-
-    private const float SORT_POS_X = 1f;
-    private const float SORT_POS_Y = -1f;
-    private Vector2 _pos = new Vector2(-2f, -0.3f);
-    private Vector2 _posX;
-    private Vector2 _posY;
-    private Vector2 _posChange;
-
-
-    private void MySort(List<GameObject> sortList, int myLevel)
+    /// <summary>
+    /// 정렬
+    /// </summary>
+    /// <param name="sortList">정렬할 리스트</param>
+    private void MySort(List<GameObject> sortList)
     {
         for (int i = 0; i < ObjectPool.Instance.WeaponPool.Count; ++i)
         {
             if (ObjectPool.Instance.WeaponPool[i].activeSelf == true)
             {
                 sortList.Add(ObjectPool.Instance.WeaponPool[i]);
-
-                if (ObjectPool.Instance.WeaponPool[i].transform.position == _equipWeaponPos)
-                {
-                    _equipWeaponLevel = ObjectPool.Instance.WeaponPool[i].GetComponent<Weapon>().WeaponLevel;
-                }
             }
         }
 
+        _equipWeaponLevel = sortList[0].GetComponent<Weapon>().WeaponLevel;
+
+        for (int i = 0; i < sortList.Count; ++i)
+        {
+            if (_equipWeaponLevel < sortList[i].GetComponent<Weapon>().WeaponLevel)
+            {
+                _equipWeaponLevel = sortList[i].GetComponent<Weapon>().WeaponLevel;
+            }
+        }
 
         while (true)
         {
@@ -315,25 +322,24 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
                 if (_equipWeaponLevel == sortList[i].GetComponent<Weapon>().WeaponLevel)
                 {
                     sortList[i].transform.position = _pos;
-                    if (i + 1 % sortList.Count == 0)
-                    {
-                        _pos += _posY + _posChange;
-                    }
-                    else
-                    {
-                        _pos += _posX;
-                    }
+
+                    _pos = sortList[i].transform.position.x < 2f ? _pos += _posX : _pos += _posY;
                 }
             }
 
+            // 여기가 문제임
             --_equipWeaponLevel;
 
-            if (_equipWeaponLevel == myLevel)
+            if (_equipWeaponLevel == Ability.Instance.WeaponLevel)
             {
-                _equipWeaponLevel = 0;
                 break;
             }
         }
+    }
+
+    public void UpdateText(TextMeshProUGUI text, string constStr = "", int? num = null)
+    {
+        text.text = constStr + num;
     }
 
 }
