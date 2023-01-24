@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using TMPro;
 
-public class ClickAndDrop : MonoBehaviour
+public class ClickAndDrop : MonoBehaviour, ITextUpdate
 {
     [SerializeField] ButtonEvent _buttonEvent;
     [SerializeField] GameObject[] _panels;
+    [SerializeField] Transform _equipWeapon;
+    [SerializeField] TextMeshProUGUI _equipWeaponLevelText;
 
     private Vector2 _touchPos;
     private Touch _touch;
@@ -18,12 +21,18 @@ public class ClickAndDrop : MonoBehaviour
     private const float Y_POS_MAX = 1150f;
 
     private const float TOUCH_OFFSET = 0.1f;
-    private const float MERGE_OFFEST = 0.5F;
+    private const float MERGE_OFFEST = 0.45f;
+    private const float EQUIP_OFFEST = 0.45f;
 
     private const int ABILITY_PANEL = 0;
     private const int STAGE_PANEL = 1;
 
+    private const string EQUIP_WEAPON_TEXT = "Equip Weapon Level : ";
+
     private Vector2 _startPos = new Vector2(0, -3.3f);
+
+    private bool _isEquip;
+    private int? _nullInt;
 
     private void Update()
     {
@@ -78,28 +87,58 @@ public class ClickAndDrop : MonoBehaviour
                     // 터치 땠을 때
                     if (_touch.phase == TouchPhase.Ended)
                     {
-                        if (_select != null && _select.GetComponent<Weapon>().WeaponLevel != Ability.Instance.MaxWeaponLevel)
+                        if (_select != null)
                         {
-                            // 땠을 때 선택된 것과 인접한 위치에 무기가 있으면 머지 함
-                            for (int i = 0; i < Ability.Instance.NowCanMakeCount + Ability.Instance.MaxHasWeapon; ++i)
+                            if (_select.GetComponent<Weapon>().WeaponLevel != Ability.Instance.MaxWeaponLevel)
                             {
-                                if (TouchWeapon(_select.transform.position, ObjectPool.Instance.WeaponPool[i].transform.position, MERGE_OFFEST))
+                                // 땠을 때 선택된 것과 인접한 위치에 무기가 있으면 머지 함
+                                for (int i = 0; i < Ability.Instance.NowCanMakeCount + Ability.Instance.MaxHasWeapon; ++i)
                                 {
-                                    // 선택한 것은 탐색 제외
-                                    if (_select != ObjectPool.Instance.WeaponPool[i])
+                                    if (TouchWeapon(_select.transform.position, ObjectPool.Instance.WeaponPool[i].transform.position, MERGE_OFFEST))
                                     {
-                                        // 선택한 것과 영역 주변 영역의 무기레벨이 같으면 레벨업
-                                        if (_select.GetComponent<Weapon>().WeaponLevel == ObjectPool.Instance.WeaponPool[i].GetComponent<Weapon>().WeaponLevel)
+                                        // 선택한 것은 탐색 제외
+                                        if (_select != ObjectPool.Instance.WeaponPool[i])
                                         {
-                                            ++ObjectPool.Instance.WeaponPool[i].GetComponent<Weapon>().WeaponLevel;
-                                            _select.transform.position = _startPos;
-                                            _select.SetActive(false);
-                                            break;
+                                            // 선택한 것과 영역 주변 영역의 무기레벨이 같으면 레벨업
+                                            if (_select.GetComponent<Weapon>().WeaponLevel == ObjectPool.Instance.WeaponPool[i].GetComponent<Weapon>().WeaponLevel)
+                                            {
+                                                ++ObjectPool.Instance.WeaponPool[i].GetComponent<Weapon>().WeaponLevel;
+                                                _select.transform.position = _startPos;
+                                                _select.SetActive(false);
+                                                break;
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
+
+                            // 장비장착칸의 근처에서 터치를 땠는지
+                            if (TouchWeapon(_select.transform.position, _equipWeapon.position, EQUIP_OFFEST) && !_isEquip)
+                            {
+                                _select.transform.position = _equipWeapon.position;
+
+                                UpdateText(_equipWeaponLevelText, EQUIP_WEAPON_TEXT, _select.GetComponent<Weapon>().WeaponLevel);
+
+                                _isEquip = true;
+                            }
+
+                            else
+                            {
+                                for (int i = 0; i < Ability.Instance.NowCanMakeCount + Ability.Instance.MaxHasWeapon; ++i)
+                                {
+                                    if (ObjectPool.Instance.WeaponPool[i].transform.position == _equipWeapon.position)
+                                    {
+                                        UpdateText(_equipWeaponLevelText, EQUIP_WEAPON_TEXT, ObjectPool.Instance.WeaponPool[i].GetComponent<Weapon>().WeaponLevel);
+
+                                        _isEquip = true;
+
+                                        break;
+                                    }
+
+                                    UpdateText(_equipWeaponLevelText, string.Empty, _nullInt);
+                                    _isEquip = false;
+                                }
+                            }}
 
                         // 초기화 및 리스트 초기화
                         EndTouchAndClear();
@@ -136,11 +175,11 @@ public class ClickAndDrop : MonoBehaviour
     /// 선택한 무기가 클릭한 위치에 인접하면 true 아니면 false
     /// </summary>
     /// <param name="touchPos">터치한 곳의 월드좌표</param>
-    /// <param name="weaponPos">무기 았는 좌표</param>
+    /// <param name="goalPos">목적지 좌표</param>
     /// <returns></returns>
-    private bool TouchWeapon(Vector2 touchPos, Vector2 weaponPos, float offset)
+    private bool TouchWeapon(Vector2 touchPos, Vector2 goalPos, float offset)
     {
-        if (touchPos.x - offset < weaponPos.x && weaponPos.x < touchPos.x + offset && touchPos.y - offset < weaponPos.y && weaponPos.y < touchPos.y + offset)
+        if (touchPos.x - offset < goalPos.x && goalPos.x < touchPos.x + offset && touchPos.y - offset < goalPos.y && goalPos.y < touchPos.y + offset)
         {
             return true;
         }
@@ -166,5 +205,10 @@ public class ClickAndDrop : MonoBehaviour
     {
         Init();
         _select = null;
+    }
+
+    public void UpdateText(TextMeshProUGUI text, string constStr, int? num)
+    {
+        text.text = constStr + num;
     }
 }

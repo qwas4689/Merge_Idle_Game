@@ -4,15 +4,17 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class ButtonEvent : MonoBehaviour
+public class ButtonEvent : MonoBehaviour , ITextUpdate
 {
     [SerializeField] TextMeshProUGUI[] _abilityTexts;
     [SerializeField] Button[] _buttons;
     [SerializeField] GameObject[] _panels;
+    [SerializeField] TextMeshProUGUI _equipWeaponLevelText;
 
+    // 무기 생산되는 영역
     private const float X_POS = 2.5f;
     private const float Y_POS_MIN = -2f;
-    private const float Y_POS_MAX = 1f;
+    private const float Y_POS_MAX = 0.1f;
 
     // 버튼 인덱스
     private const int CREATE_WEAPON_BUTTON = 0;
@@ -25,10 +27,7 @@ public class ButtonEvent : MonoBehaviour
     private const int NOW_CAN_MAKE_UP_MAX_BUTTON = 7;
     private const int CAN_HAS_WEAPON_UP_BUTTON = 8;
 
-    private const int UP_VALUE_INT = 1;
-    private const float UP_VALUE_FLOAT = 0.01f;
-
-
+    // 판넬 인덱스
     private const int ABILITY_PANEL = 0;
     private const int STAGE_PANEL = 1;
 
@@ -44,9 +43,15 @@ public class ButtonEvent : MonoBehaviour
     private const int NOW_CAN_MAKE_UP_MAX_BUTTON_TEXT = 8;
     private const int CAN_HAS_WEAPON_UP_BUTTON_TEXT = 9;
 
-    private const string MAX = "Max";
 
-    //public int WeaponCounts { get; set; } = -1;
+    // 텍스트
+    private const string MAX = "Max";
+    private const string EQUIP_WEAPON_TEXT = "Equip Weapon Level : ";
+
+    // 어빌리티 올라가는 수치
+    private const int UP_VALUE_INT = 1;
+
+    private int? _nullInt;
 
     private void Awake()
     {
@@ -56,11 +61,11 @@ public class ButtonEvent : MonoBehaviour
         }
 
         _buttons[CREATE_WEAPON_BUTTON].onClick.AddListener(CreateWeapon);
-        _buttons[ABILITY_UI_BUTTON].onClick.AddListener(() => MenuButtonClick(STAGE_PANEL, false, ABILITY_PANEL, true));
-        _buttons[MERGE_UI_BUTTON].onClick.AddListener(() => MenuButtonClick(STAGE_PANEL, false, ABILITY_PANEL, false));
-        _buttons[STAGE_UI_BUTTON].onClick.AddListener(() => MenuButtonClick(STAGE_PANEL, true, ABILITY_PANEL, false));
+        _buttons[ABILITY_UI_BUTTON].onClick.AddListener(() => MenuButtonClick(STAGE_PANEL, false, ABILITY_PANEL, true, _equipWeaponLevelText, false));
+        _buttons[MERGE_UI_BUTTON].onClick.AddListener(() => MenuButtonClick(STAGE_PANEL, false, ABILITY_PANEL, false, _equipWeaponLevelText, true));
+        _buttons[STAGE_UI_BUTTON].onClick.AddListener(() => MenuButtonClick(STAGE_PANEL, true, ABILITY_PANEL, false, _equipWeaponLevelText, false));
         _buttons[ATTACK_POWER_UP_BUTTON].onClick.AddListener(() => ClickAttackPowerUpButton(UP_VALUE_INT));
-        _buttons[MAKE_SPEED_UP_BUTTON].onClick.AddListener(() => ClickMakeSpeedUPButton(UP_VALUE_FLOAT));
+        _buttons[MAKE_SPEED_UP_BUTTON].onClick.AddListener(() => ClickMakeSpeedUPButton(UP_VALUE_INT));
         _buttons[WEAPON_LEVEL_UP_BUTTON].onClick.AddListener(() => ClickWeaponLevelUpButton(UP_VALUE_INT));
         _buttons[NOW_CAN_MAKE_UP_MAX_BUTTON].onClick.AddListener(() => ClickNowCanMakeMaxUpButton(UP_VALUE_INT));
         _buttons[CAN_HAS_WEAPON_UP_BUTTON].onClick.AddListener(() => ClickCanHasWeaponUpButton(UP_VALUE_INT));
@@ -68,12 +73,12 @@ public class ButtonEvent : MonoBehaviour
 
     private void Start()
     {
-        _abilityTexts[ATTACK_POWER].text = Ability.Instance.AttackPower.ToString();
-        _abilityTexts[MAKE_SPEED].text = Ability.Instance.MakeSpeed.ToString();
-        _abilityTexts[WEAPON_LEVEL].text = Ability.Instance.WeaponLevel.ToString();
-        _abilityTexts[NOW_CAN_Max_MAKE].text = Ability.Instance.NowCanMakeCount.ToString();
-        _abilityTexts[CAN_HAS_WEAPON].text = Ability.Instance.CanHasWeapon.ToString();
-        _abilityTexts[CREATE_WEAPON].text = Ability.Instance.NowCanMakeCount.ToString() + " / " + Ability.Instance.NowCanMakeMaxCount.ToString();
+        UpdateText(_abilityTexts[ATTACK_POWER], string.Empty, Ability.Instance.AttackPower);
+        UpdateText(_abilityTexts[MAKE_SPEED], string.Empty, Ability.Instance.MakeSpeed);
+        UpdateText(_abilityTexts[WEAPON_LEVEL], string.Empty, Ability.Instance.WeaponLevel);
+        UpdateText(_abilityTexts[NOW_CAN_Max_MAKE], string.Empty, Ability.Instance.NowCanMakeCount);
+        UpdateText(_abilityTexts[CAN_HAS_WEAPON], string.Empty, Ability.Instance.CanHasWeapon);
+        UpdateText(_abilityTexts[CREATE_WEAPON], Ability.Instance.NowCanMakeCount.ToString() + " / " + Ability.Instance.NowCanMakeMaxCount.ToString(), _nullInt);
     }
 
     /// <summary>
@@ -149,10 +154,11 @@ public class ButtonEvent : MonoBehaviour
     /// <param name="value1">값</param>
     /// <param name="index2">어빌리티 판넬</param>
     /// <param name="value2">값</param>
-    private void MenuButtonClick(int index1, bool value1, int index2, bool value2)
+    private void MenuButtonClick(int index1, bool value1, int index2, bool value2, TextMeshProUGUI weaponLevelText, bool value3)
     {
         _panels[index1].SetActive(value1);
         _panels[index2].SetActive(value2);
+        weaponLevelText.gameObject.SetActive(value3);
     }
 
     /// <summary>
@@ -162,14 +168,15 @@ public class ButtonEvent : MonoBehaviour
     private void ClickAttackPowerUpButton(int value)
     {
         Ability.Instance.AttackPower += value;
-        _abilityTexts[ATTACK_POWER].text = Ability.Instance.AttackPower.ToString();
+
+        UpdateText(_abilityTexts[ATTACK_POWER], string.Empty, Ability.Instance.AttackPower);
     }
 
     /// <summary>
     /// 제작속도 업
     /// </summary>
     /// <param name="value"></param>
-    private void ClickMakeSpeedUPButton(float value)
+    private void ClickMakeSpeedUPButton(int value)
     {
         Ability.Instance.MakeSpeed += value;
 
@@ -179,7 +186,7 @@ public class ButtonEvent : MonoBehaviour
             _abilityTexts[MAKE_SPEED_UP_BUTTON_TEXT].text = MAX;
         }
 
-        _abilityTexts[MAKE_SPEED].text = Ability.Instance.MakeSpeed.ToString();
+        UpdateText(_abilityTexts[MAKE_SPEED], string.Empty, Ability.Instance.MakeSpeed);
     }
 
     /// <summary>
@@ -204,7 +211,8 @@ public class ButtonEvent : MonoBehaviour
             _abilityTexts[WEAPON_LEVEL_UP_BUTTON_TEXT].text = MAX;
         }
 
-        _abilityTexts[WEAPON_LEVEL].text = Ability.Instance.WeaponLevel.ToString();
+        UpdateText(_abilityTexts[WEAPON_LEVEL], Ability.Instance.WeaponLevel.ToString(), _nullInt);
+        UpdateText(_equipWeaponLevelText, EQUIP_WEAPON_TEXT, Ability.Instance.WeaponLevel);
     }
 
     /// <summary>
@@ -221,8 +229,8 @@ public class ButtonEvent : MonoBehaviour
             _abilityTexts[NOW_CAN_MAKE_UP_MAX_BUTTON_TEXT].text = MAX;
         }
 
-        _abilityTexts[NOW_CAN_Max_MAKE].text = Ability.Instance.NowCanMakeMaxCount.ToString();
-        _abilityTexts[CREATE_WEAPON].text = Ability.Instance.NowCanMakeCount.ToString() + " / " + Ability.Instance.NowCanMakeMaxCount.ToString();
+        UpdateText(_abilityTexts[NOW_CAN_Max_MAKE], string.Empty, Ability.Instance.NowCanMakeMaxCount);
+        UpdateText(_abilityTexts[CREATE_WEAPON], Ability.Instance.NowCanMakeCount.ToString() + " / " + Ability.Instance.NowCanMakeMaxCount.ToString(), _nullInt);
     }
 
     /// <summary>
@@ -239,6 +247,11 @@ public class ButtonEvent : MonoBehaviour
             _abilityTexts[CAN_HAS_WEAPON_UP_BUTTON_TEXT].text = MAX;
         }
 
-        _abilityTexts[CAN_HAS_WEAPON].text = Ability.Instance.CanHasWeapon.ToString();
+        UpdateText(_abilityTexts[CAN_HAS_WEAPON], string.Empty, Ability.Instance.CanHasWeapon);
+    }
+
+    public void UpdateText(TextMeshProUGUI text, string constStr, int? num)
+    {
+        text.text = constStr + num;
     }
 }

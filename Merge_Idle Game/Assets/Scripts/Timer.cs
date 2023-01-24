@@ -11,7 +11,7 @@ public class Timer : MonoBehaviour
 
     void Update()
     {
-        _time += Time.deltaTime * Ability.Instance.MakeSpeed;
+        _time += Time.deltaTime * (Ability.Instance.MakeSpeed * 0.01f);
 
         if (_time > 1f)
         {

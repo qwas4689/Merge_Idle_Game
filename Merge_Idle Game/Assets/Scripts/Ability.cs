@@ -22,9 +22,9 @@ public class Ability : SingletonBehaviour<Ability>
     /// <summary>
     /// 제작 속도
     /// </summary>
-    public float MakeSpeed { get; set; }
+    public int MakeSpeed { get; set; }
 
-    public float MaxMakeSpeed { get; private set; } = 0.3f;
+    public int MaxMakeSpeed { get; private set; } = 30;
     
     /// <summary>
     /// 제작 가능한 무기의 레벨
@@ -70,7 +70,7 @@ public class Ability : SingletonBehaviour<Ability>
 
         // PlayerPrefs 에 데이터가 없을 시 실행
         AttackPower = 1;
-        MakeSpeed = 0.01f;
+        MakeSpeed = 1;
         WeaponLevel = 0;
         NowCanMakeCount = 5;
         NowCanMakeMaxCount = 5;
