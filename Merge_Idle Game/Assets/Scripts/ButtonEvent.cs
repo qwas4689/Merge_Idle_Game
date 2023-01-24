@@ -53,6 +53,11 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
     // 어빌리티 올라가는 수치
     private const int UP_VALUE_INT = 1;
 
+    private List<GameObject> _sortList = new List<GameObject>();
+
+    private Vector3 _equipWeaponPos = new Vector3(0f, 0.95f, 0f);
+    private int _equipWeaponLevel;
+
     private void Awake()
     {
         foreach (Button button in _buttons)
@@ -69,6 +74,7 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
         _buttons[WEAPON_LEVEL_UP_BUTTON].onClick.AddListener(() => ClickWeaponLevelUpButton(UP_VALUE_INT));
         _buttons[NOW_CAN_MAKE_UP_MAX_BUTTON].onClick.AddListener(() => ClickNowCanMakeMaxUpButton(UP_VALUE_INT));
         _buttons[CAN_HAS_WEAPON_UP_BUTTON].onClick.AddListener(() => ClickCanHasWeaponUpButton(UP_VALUE_INT));
+        _buttons[SORT_BUTTON].onClick.AddListener(() => ClickSortButton(ref _sortList));
     }
 
     private void Start()
@@ -79,10 +85,14 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
         UpdateText(_abilityTexts[NOW_CAN_Max_MAKE], string.Empty, Ability.Instance.NowCanMakeCount);
         UpdateText(_abilityTexts[CAN_HAS_WEAPON], string.Empty, Ability.Instance.CanHasWeapon);
         UpdateText(_abilityTexts[CREATE_WEAPON], Ability.Instance.NowCanMakeCount.ToString() + " / " + Ability.Instance.NowCanMakeMaxCount.ToString());
+
+        _posX = new Vector2(SORT_POS_X, 0f);
+        _posY = new Vector2(0f, SORT_POS_Y);
+        _posChange = new Vector2(-4f, 0f);
     }
 
     /// <summary>
-    /// 무기 생성
+    /// 무기 생성 버튼 클릭
     /// </summary>
     private void CreateWeapon()
     {
@@ -161,7 +171,7 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
     }
 
     /// <summary>
-    /// 공격력 업
+    /// 공격력 업 버튼 클릭
     /// </summary>
     /// <param name="value"></param>
     private void ClickAttackPowerUpButton(int value)
@@ -172,7 +182,7 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
     }
 
     /// <summary>
-    /// 제작속도 업
+    /// 제작속도 업 버튼 클릭
     /// </summary>
     /// <param name="value"></param>
     private void ClickMakeSpeedUPButton(int value)
@@ -189,7 +199,7 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
     }
 
     /// <summary>
-    /// 제작 무기 레벨 업
+    /// 제작 무기 레벨 업 버튼 클릭
     /// </summary>
     /// <param name="value"></param>
     private void ClickWeaponLevelUpButton(int value)
@@ -219,7 +229,7 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
     }
 
     /// <summary>
-    /// 제작가능한 최대 갯수
+    /// 제작가능한 최대 갯수 버튼 클릭
     /// </summary>
     /// <param name="value"></param>
     private void ClickNowCanMakeMaxUpButton(int value)
@@ -237,7 +247,7 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
     }
 
     /// <summary>
-    /// 가질 수 있는 무기 수
+    /// 가질 수 있는 무기 수 버튼 클릭
     /// </summary>
     /// <param name="value"></param>
     private void ClickCanHasWeaponUpButton(int value)
@@ -253,8 +263,77 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
         UpdateText(_abilityTexts[CAN_HAS_WEAPON], string.Empty, Ability.Instance.CanHasWeapon);
     }
 
+    /// <summary>
+    /// 정렬 버튼 클릭 
+    /// </summary>
+    private void ClickSortButton(ref List<GameObject> sortList)
+    {
+        // 정렬상태인지 아닌지 확인하고 리턴할 수 있게 하자
+        if (_clickAndDrop.IsSort)
+        {
+            return;
+        }
+
+        MySort(sortList, Ability.Instance.WeaponLevel);
+
+        _clickAndDrop.IsSort = true;
+    }
+
     public void UpdateText(TextMeshProUGUI text, string constStr = "", int? num = null)
     {
         text.text = constStr + num;
     }
+
+    private const float SORT_POS_X = 1f;
+    private const float SORT_POS_Y = -1f;
+    private Vector2 _pos = new Vector2(-2f, -0.3f);
+    private Vector2 _posX;
+    private Vector2 _posY;
+    private Vector2 _posChange;
+
+
+    private void MySort(List<GameObject> sortList, int myLevel)
+    {
+        for (int i = 0; i < ObjectPool.Instance.WeaponPool.Count; ++i)
+        {
+            if (ObjectPool.Instance.WeaponPool[i].activeSelf == true)
+            {
+                sortList.Add(ObjectPool.Instance.WeaponPool[i]);
+
+                if (ObjectPool.Instance.WeaponPool[i].transform.position == _equipWeaponPos)
+                {
+                    _equipWeaponLevel = ObjectPool.Instance.WeaponPool[i].GetComponent<Weapon>().WeaponLevel;
+                }
+            }
+        }
+
+
+        while (true)
+        {
+            for (int i = 0; i < sortList.Count; ++i)
+            {
+                if (_equipWeaponLevel == sortList[i].GetComponent<Weapon>().WeaponLevel)
+                {
+                    sortList[i].transform.position = _pos;
+                    if (i + 1 % sortList.Count == 0)
+                    {
+                        _pos += _posY + _posChange;
+                    }
+                    else
+                    {
+                        _pos += _posX;
+                    }
+                }
+            }
+
+            --_equipWeaponLevel;
+
+            if (_equipWeaponLevel == myLevel)
+            {
+                _equipWeaponLevel = 0;
+                break;
+            }
+        }
+    }
+
 }

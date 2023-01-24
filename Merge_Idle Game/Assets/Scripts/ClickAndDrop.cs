@@ -31,7 +31,12 @@ public class ClickAndDrop : MonoBehaviour, ITextUpdate
 
     private Vector2 _startPos = new Vector2(0, -3.3f);
 
+    // 무기를 장착중이면 true 아니면 false 인 프로퍼티
     public bool IsEquip { get; private set; }
+
+    // 소팅한 상태면 true 아니면 false 인 프로퍼티
+    public bool IsSort { get; set; }
+
 
     private void Update()
     {
@@ -120,7 +125,6 @@ public class ClickAndDrop : MonoBehaviour, ITextUpdate
 
                                 IsEquip = true;
                             }
-
                             else
                             {
                                 for (int i = 0; i < Ability.Instance.MaxHasWeapon; ++i)
@@ -137,7 +141,11 @@ public class ClickAndDrop : MonoBehaviour, ITextUpdate
                                     UpdateText(_equipWeaponLevelText);
                                     IsEquip = false;
                                 }
-                            }}
+                            }
+
+                            // 무기를 옮긴거니 소트를 할 수 있음
+                            IsSort = false;
+                        }
 
                         // 초기화 및 리스트 초기화
                         EndTouchAndClear();
