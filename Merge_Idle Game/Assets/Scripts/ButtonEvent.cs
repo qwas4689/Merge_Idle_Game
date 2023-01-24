@@ -327,10 +327,9 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
                 }
             }
 
-            // 여기가 문제임
             --_equipWeaponLevel;
 
-            if (_equipWeaponLevel == Ability.Instance.WeaponLevel)
+            if (_equipWeaponLevel == Ability.Instance.WeaponLevel -1)
             {
                 break;
             }
