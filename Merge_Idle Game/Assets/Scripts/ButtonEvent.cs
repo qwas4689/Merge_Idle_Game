@@ -78,7 +78,7 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
         UpdateText(_abilityTexts[WEAPON_LEVEL], string.Empty, Ability.Instance.WeaponLevel);
         UpdateText(_abilityTexts[NOW_CAN_Max_MAKE], string.Empty, Ability.Instance.NowCanMakeCount);
         UpdateText(_abilityTexts[CAN_HAS_WEAPON], string.Empty, Ability.Instance.CanHasWeapon);
-        UpdateText(_abilityTexts[CREATE_WEAPON], Ability.Instance.NowCanMakeCount.ToString() + " / " + Ability.Instance.NowCanMakeMaxCount.ToString(), _nullInt);
+        UpdateText(_abilityTexts[CREATE_WEAPON], Ability.Instance.NowCanMakeCount.ToString() + " / " + Ability.Instance.NowCanMakeMaxCount.ToString());
     }
 
     /// <summary>
@@ -211,7 +211,7 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
             _abilityTexts[WEAPON_LEVEL_UP_BUTTON_TEXT].text = MAX;
         }
 
-        UpdateText(_abilityTexts[WEAPON_LEVEL], Ability.Instance.WeaponLevel.ToString(), _nullInt);
+        UpdateText(_abilityTexts[WEAPON_LEVEL], Ability.Instance.WeaponLevel.ToString());
         UpdateText(_equipWeaponLevelText, EQUIP_WEAPON_TEXT, Ability.Instance.WeaponLevel);
     }
 
@@ -230,7 +230,7 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
         }
 
         UpdateText(_abilityTexts[NOW_CAN_Max_MAKE], string.Empty, Ability.Instance.NowCanMakeMaxCount);
-        UpdateText(_abilityTexts[CREATE_WEAPON], Ability.Instance.NowCanMakeCount.ToString() + " / " + Ability.Instance.NowCanMakeMaxCount.ToString(), _nullInt);
+        UpdateText(_abilityTexts[CREATE_WEAPON], Ability.Instance.NowCanMakeCount.ToString() + " / " + Ability.Instance.NowCanMakeMaxCount.ToString());
     }
 
     /// <summary>
@@ -250,7 +250,7 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
         UpdateText(_abilityTexts[CAN_HAS_WEAPON], string.Empty, Ability.Instance.CanHasWeapon);
     }
 
-    public void UpdateText(TextMeshProUGUI text, string constStr, int? num)
+    public void UpdateText(TextMeshProUGUI text, string constStr = "", int? num = null)
     {
         text.text = constStr + num;
     }

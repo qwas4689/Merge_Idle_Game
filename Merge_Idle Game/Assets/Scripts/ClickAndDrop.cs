@@ -135,7 +135,7 @@ public class ClickAndDrop : MonoBehaviour, ITextUpdate
                                         break;
                                     }
 
-                                    UpdateText(_equipWeaponLevelText, string.Empty, _nullInt);
+                                    UpdateText(_equipWeaponLevelText);
                                     _isEquip = false;
                                 }
                             }}
@@ -207,7 +207,7 @@ public class ClickAndDrop : MonoBehaviour, ITextUpdate
         _select = null;
     }
 
-    public void UpdateText(TextMeshProUGUI text, string constStr, int? num)
+    public void UpdateText(TextMeshProUGUI text, string constStr = "", int? num = null)
     {
         text.text = constStr + num;
     }
