@@ -31,8 +31,7 @@ public class ClickAndDrop : MonoBehaviour, ITextUpdate
 
     private Vector2 _startPos = new Vector2(0, -3.3f);
 
-    private bool _isEquip;
-    private int? _nullInt;
+    public bool IsEquip { get; private set; }
 
     private void Update()
     {
@@ -56,7 +55,7 @@ public class ClickAndDrop : MonoBehaviour, ITextUpdate
                     if (_touch.phase == TouchPhase.Began)
                     {
                         // 무기를 터치했는지 확인
-                        for (int i = 0; i < Ability.Instance.NowCanMakeCount + Ability.Instance.MaxHasWeapon; ++i)
+                        for (int i = 0; i < Ability.Instance.MaxHasWeapon; ++i)
                         {
                             if (TouchWeapon(_touchPos, ObjectPool.Instance.WeaponPool[i].transform.position, TOUCH_OFFSET))
                             {
@@ -92,7 +91,7 @@ public class ClickAndDrop : MonoBehaviour, ITextUpdate
                             if (_select.GetComponent<Weapon>().WeaponLevel != Ability.Instance.MaxWeaponLevel)
                             {
                                 // 땠을 때 선택된 것과 인접한 위치에 무기가 있으면 머지 함
-                                for (int i = 0; i < Ability.Instance.NowCanMakeCount + Ability.Instance.MaxHasWeapon; ++i)
+                                for (int i = 0; i < Ability.Instance.MaxHasWeapon; ++i)
                                 {
                                     if (TouchWeapon(_select.transform.position, ObjectPool.Instance.WeaponPool[i].transform.position, MERGE_OFFEST))
                                     {
@@ -113,30 +112,30 @@ public class ClickAndDrop : MonoBehaviour, ITextUpdate
                             }
 
                             // 장비장착칸의 근처에서 터치를 땠는지
-                            if (TouchWeapon(_select.transform.position, _equipWeapon.position, EQUIP_OFFEST) && !_isEquip)
+                            if (TouchWeapon(_select.transform.position, _equipWeapon.position, EQUIP_OFFEST) && !IsEquip)
                             {
                                 _select.transform.position = _equipWeapon.position;
 
                                 UpdateText(_equipWeaponLevelText, EQUIP_WEAPON_TEXT, _select.GetComponent<Weapon>().WeaponLevel);
 
-                                _isEquip = true;
+                                IsEquip = true;
                             }
 
                             else
                             {
-                                for (int i = 0; i < Ability.Instance.NowCanMakeCount + Ability.Instance.MaxHasWeapon; ++i)
+                                for (int i = 0; i < Ability.Instance.MaxHasWeapon; ++i)
                                 {
                                     if (ObjectPool.Instance.WeaponPool[i].transform.position == _equipWeapon.position)
                                     {
                                         UpdateText(_equipWeaponLevelText, EQUIP_WEAPON_TEXT, ObjectPool.Instance.WeaponPool[i].GetComponent<Weapon>().WeaponLevel);
 
-                                        _isEquip = true;
+                                        IsEquip = true;
 
                                         break;
                                     }
 
                                     UpdateText(_equipWeaponLevelText);
-                                    _isEquip = false;
+                                    IsEquip = false;
                                 }
                             }}
 

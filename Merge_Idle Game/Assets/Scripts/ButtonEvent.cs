@@ -10,6 +10,7 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
     [SerializeField] Button[] _buttons;
     [SerializeField] GameObject[] _panels;
     [SerializeField] TextMeshProUGUI _equipWeaponLevelText;
+    [SerializeField] ClickAndDrop _clickAndDrop;
 
     // 무기 생산되는 영역
     private const float X_POS = 2.5f;
@@ -26,6 +27,7 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
     private const int WEAPON_LEVEL_UP_BUTTON = 6;
     private const int NOW_CAN_MAKE_UP_MAX_BUTTON = 7;
     private const int CAN_HAS_WEAPON_UP_BUTTON = 8;
+    private const int SORT_BUTTON = 9;
 
     // 판넬 인덱스
     private const int ABILITY_PANEL = 0;
@@ -51,8 +53,6 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
     // 어빌리티 올라가는 수치
     private const int UP_VALUE_INT = 1;
 
-    private int? _nullInt;
-
     private void Awake()
     {
         foreach (Button button in _buttons)
@@ -61,9 +61,9 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
         }
 
         _buttons[CREATE_WEAPON_BUTTON].onClick.AddListener(CreateWeapon);
-        _buttons[ABILITY_UI_BUTTON].onClick.AddListener(() => MenuButtonClick(STAGE_PANEL, false, ABILITY_PANEL, true, _equipWeaponLevelText, false));
-        _buttons[MERGE_UI_BUTTON].onClick.AddListener(() => MenuButtonClick(STAGE_PANEL, false, ABILITY_PANEL, false, _equipWeaponLevelText, true));
-        _buttons[STAGE_UI_BUTTON].onClick.AddListener(() => MenuButtonClick(STAGE_PANEL, true, ABILITY_PANEL, false, _equipWeaponLevelText, false));
+        _buttons[ABILITY_UI_BUTTON].onClick.AddListener(() => MenuButtonClick(STAGE_PANEL, false, ABILITY_PANEL, true));
+        _buttons[MERGE_UI_BUTTON].onClick.AddListener(() => MenuButtonClick(STAGE_PANEL, false, ABILITY_PANEL, false));
+        _buttons[STAGE_UI_BUTTON].onClick.AddListener(() => MenuButtonClick(STAGE_PANEL, true, ABILITY_PANEL, false));
         _buttons[ATTACK_POWER_UP_BUTTON].onClick.AddListener(() => ClickAttackPowerUpButton(UP_VALUE_INT));
         _buttons[MAKE_SPEED_UP_BUTTON].onClick.AddListener(() => ClickMakeSpeedUPButton(UP_VALUE_INT));
         _buttons[WEAPON_LEVEL_UP_BUTTON].onClick.AddListener(() => ClickWeaponLevelUpButton(UP_VALUE_INT));
@@ -89,7 +89,7 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
         if (0 < Ability.Instance.NowCanMakeCount)
         {
             int count = 0;
-            for (int i = 0; i < Ability.Instance.NowCanMakeCount + Ability.Instance.MaxHasWeapon; ++i)
+            for (int i = 0; i < Ability.Instance.MaxHasWeapon; ++i)
             {
                 if (ObjectPool.Instance.WeaponPool[i].activeSelf == true)
                 {
@@ -154,11 +154,10 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
     /// <param name="value1">값</param>
     /// <param name="index2">어빌리티 판넬</param>
     /// <param name="value2">값</param>
-    private void MenuButtonClick(int index1, bool value1, int index2, bool value2, TextMeshProUGUI weaponLevelText, bool value3)
+    private void MenuButtonClick(int index1, bool value1, int index2, bool value2)
     {
         _panels[index1].SetActive(value1);
         _panels[index2].SetActive(value2);
-        weaponLevelText.gameObject.SetActive(value3);
     }
 
     /// <summary>
@@ -197,7 +196,7 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
     {
         Ability.Instance.WeaponLevel += value;
 
-        for (int i = 0; i < Ability.Instance.NowCanMakeCount - value + Ability.Instance.MaxHasWeapon; ++i)
+        for (int i = 0; i < Ability.Instance.MaxHasWeapon; ++i)
         {
             if (ObjectPool.Instance.WeaponPool[i].GetComponent<Weapon>().WeaponLevel < Ability.Instance.WeaponLevel)
             {
@@ -212,7 +211,11 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
         }
 
         UpdateText(_abilityTexts[WEAPON_LEVEL], Ability.Instance.WeaponLevel.ToString());
-        UpdateText(_equipWeaponLevelText, EQUIP_WEAPON_TEXT, Ability.Instance.WeaponLevel);
+
+        if (_clickAndDrop.IsEquip)
+        {
+            UpdateText(_equipWeaponLevelText, EQUIP_WEAPON_TEXT, Ability.Instance.WeaponLevel);
+        }
     }
 
     /// <summary>

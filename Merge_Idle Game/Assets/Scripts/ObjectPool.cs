@@ -18,7 +18,11 @@ public class ObjectPool : SingletonBehaviour<ObjectPool>
         _weaponArr = new GameObject[_ability.MaxCanMake + _ability.MaxCanMake];
         WeaponPool = new List<GameObject>(_ability.MaxCanMake + _ability.MaxCanMake);
 
-        for (int i = 0; i < _ability.NowCanMakeCount + _ability.MaxCanMake; ++i)
+
+        _weaponArr = new GameObject[Ability.Instance.MaxHasWeapon];
+        WeaponPool = new List<GameObject>(Ability.Instance.MaxHasWeapon);
+
+        for (int i = 0; i < Ability.Instance.MaxHasWeapon; ++i)
         {
             _weaponArr[i] = Instantiate(_gameObject[WEAPON]);
             _weaponArr[i].transform.SetParent(transform);
