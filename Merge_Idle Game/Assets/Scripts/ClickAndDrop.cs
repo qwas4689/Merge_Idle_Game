@@ -37,8 +37,8 @@ public class ClickAndDrop : MonoBehaviour, ITextUpdate
     // 소팅한 상태면 true 아니면 false 인 프로퍼티
     public bool IsSort { get; set; }
 
-    // 장착하고 있는 무기의 레벨 널일 수 있음
-    public int EquipWeaponLevel { get; private set; }
+    // 장착한 무기의 레벨
+    public int EquipWeaponLevel { get; set; }
 
     private const int NONE_WEAPON = 0;
 

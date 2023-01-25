@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class ButtonEvent : MonoBehaviour , ITextUpdate
+public class ButtonEvent : MonoBehaviour, ITextUpdate
 {
     [SerializeField] TextMeshProUGUI[] _abilityTexts;
     [SerializeField] Button[] _buttons;
@@ -231,6 +231,11 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
             {
                 ObjectPool.Instance.WeaponPool[i].GetComponent<Weapon>().WeaponLevel = Ability.Instance.WeaponLevel;
             }
+
+            if (ObjectPool.Instance.WeaponPool[i].transform.position == _equipWeaponPos)
+            {
+                _clickAndDrop.EquipWeaponLevel = ObjectPool.Instance.WeaponPool[i].GetComponent<Weapon>().WeaponLevel;
+            }
         }
 
         if (Ability.Instance.MaxWeaponLevel - value < Ability.Instance.WeaponLevel)
@@ -295,8 +300,6 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
 
         MySort(sortList);
 
-        Debug.Log(_sortList.Count);
-
         _pos = _constPos;
         _clickAndDrop.IsSort = true;
         _equipWeaponLevel = 0;
@@ -341,7 +344,7 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
 
             --_equipWeaponLevel;
 
-            if (_equipWeaponLevel == Ability.Instance.WeaponLevel -1)
+            if (_equipWeaponLevel == Ability.Instance.WeaponLevel - 1)
             {
                 break;
             }
