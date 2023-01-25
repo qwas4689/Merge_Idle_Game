@@ -331,7 +331,7 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
         {
             for (int i = 0; i < sortList.Count; ++i)
             {
-                if (_equipWeaponLevel == sortList[i].GetComponent<Weapon>().WeaponLevel)
+                if (_equipWeaponLevel == sortList[i].GetComponent<Weapon>().WeaponLevel && sortList[i].transform.position != _equipWeaponPos)
                 {
                     sortList[i].transform.position = _pos;
 
