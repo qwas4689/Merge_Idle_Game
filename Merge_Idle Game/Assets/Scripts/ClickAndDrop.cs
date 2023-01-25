@@ -37,6 +37,10 @@ public class ClickAndDrop : MonoBehaviour, ITextUpdate
     // 소팅한 상태면 true 아니면 false 인 프로퍼티
     public bool IsSort { get; set; }
 
+    // 장착하고 있는 무기의 레벨 널일 수 있음
+    public int EquipWeaponLevel { get; private set; }
+
+    private const int NONE_WEAPON = 0;
 
     private void Update()
     {
@@ -123,6 +127,8 @@ public class ClickAndDrop : MonoBehaviour, ITextUpdate
 
                                 UpdateText(_equipWeaponLevelText, EQUIP_WEAPON_TEXT, _select.GetComponent<Weapon>().WeaponLevel);
 
+                                EquipWeaponLevel = _select.GetComponent<Weapon>().WeaponLevel;
+
                                 IsEquip = true;
                             }
                             else
@@ -133,10 +139,14 @@ public class ClickAndDrop : MonoBehaviour, ITextUpdate
                                     {
                                         UpdateText(_equipWeaponLevelText, EQUIP_WEAPON_TEXT, ObjectPool.Instance.WeaponPool[i].GetComponent<Weapon>().WeaponLevel);
 
+                                        EquipWeaponLevel = ObjectPool.Instance.WeaponPool[i].GetComponent<Weapon>().WeaponLevel;
+
                                         IsEquip = true;
 
                                         break;
                                     }
+
+                                    EquipWeaponLevel = NONE_WEAPON;
 
                                     UpdateText(_equipWeaponLevelText);
                                     IsEquip = false;

@@ -3,22 +3,57 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-public class Timer : MonoBehaviour
+public class Timer : MonoBehaviour , ITextUpdate
 {
     [SerializeField] private TextMeshProUGUI _createWeaponText;
+    [SerializeField] private Gold _gold;
 
-    private float _time;
+    private float _makeTime;
+    private float _collectTime;
 
     void Update()
     {
-        _time += Time.deltaTime * (Ability.Instance.MakeSpeed * 0.01f);
+        _makeTime += Time.deltaTime * (Ability.Instance.MakeSpeed * 0.01f);
+        _collectTime += Time.deltaTime;
 
-        if (_time > 1f)
+        MakeTimeDone();
+
+        CollectTimeDone();
+    }
+
+    /// <summary>
+    /// 무기 생산 가능 횟수 증가 텍스드
+    /// </summary>
+    private void MakeTimeDone()
+    {
+        if (_makeTime > 1f)
         {
-            _time -= _time;
+            _makeTime -= _makeTime;
 
-            ++Ability.Instance.NowCanMakeCount;
-            _createWeaponText.text = Ability.Instance.NowCanMakeCount.ToString() + " / " + Ability.Instance.NowCanMakeMaxCount.ToString();
+            if (Ability.Instance.NowCanMakeCount != Ability.Instance.NowCanMakeMaxCount)
+            {
+                ++Ability.Instance.NowCanMakeCount;
+            }
+
+            UpdateText(_createWeaponText, Ability.Instance.NowCanMakeCount.ToString() + " / " + Ability.Instance.NowCanMakeMaxCount.ToString());
         }
+    }
+
+    /// <summary>
+    /// 골드 생산
+    /// </summary>
+    private void CollectTimeDone()
+    {
+        if (_collectTime < 2f)
+        {
+            _collectTime -= _collectTime;
+
+            _gold.CollectGoldEvent.Invoke();
+        }
+    }
+
+    public void UpdateText(TextMeshProUGUI text, string constStr = "", int? num = null)
+    {
+        text.text = constStr + num;
     }
 }

@@ -11,6 +11,8 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
     [SerializeField] GameObject[] _panels;
     [SerializeField] TextMeshProUGUI _equipWeaponLevelText;
     [SerializeField] ClickAndDrop _clickAndDrop;
+    [SerializeField] TextMeshProUGUI[] _goldText;
+    [SerializeField] Gold _gold;
 
     // 무기 생산되는 영역
     private const float X_POS = 2.5f;
@@ -18,37 +20,43 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
     private const float Y_POS_MAX = 0.1f;
 
     // 버튼 인덱스
-    private const int CREATE_WEAPON_BUTTON = 0;
-    private const int ABILITY_UI_BUTTON = 1;
-    private const int MERGE_UI_BUTTON = 2;
-    private const int STAGE_UI_BUTTON = 3;
-    private const int ATTACK_POWER_UP_BUTTON = 4;
-    private const int MAKE_SPEED_UP_BUTTON = 5;
-    private const int WEAPON_LEVEL_UP_BUTTON = 6;
-    private const int NOW_CAN_MAKE_UP_MAX_BUTTON = 7;
-    private const int CAN_HAS_WEAPON_UP_BUTTON = 8;
-    private const int SORT_BUTTON = 9;
+    private const int CREATE_WEAPON_BUTTON_INDEX = 0;
+    private const int ABILITY_UI_BUTTON_INDEX = 1;
+    private const int MERGE_UI_BUTTON_INDEX = 2;
+    private const int STAGE_UI_BUTTON_INDEX = 3;
+    private const int ATTACK_POWER_UP_BUTTON_INDEX = 4;
+    private const int MAKE_SPEED_UP_BUTTON_INDEX = 5;
+    private const int WEAPON_LEVEL_UP_BUTTON_INDEX = 6;
+    private const int NOW_CAN_MAKE_UP_MAX_BUTTON_INDEX = 7;
+    private const int CAN_HAS_WEAPON_UP_BUTTON_INDEX = 8;
+    private const int SORT_BUTTON_INDEX = 9;
+    private const int COLLECT_GOLD_BUTTON_INDEX = 10;
 
     // 판넬 인덱스
-    private const int ABILITY_PANEL = 0;
-    private const int STAGE_PANEL = 1;
+    private const int ABILITY_PANEL_INDEX = 0;
+    private const int STAGE_PANEL_INDEX = 1;
 
-    // 텍스트 인덱스
-    private const int ATTACK_POWER = 0;
-    private const int MAKE_SPEED = 1;
-    private const int WEAPON_LEVEL = 2;
-    private const int NOW_CAN_Max_MAKE = 3;
-    private const int CAN_HAS_WEAPON = 4;
-    private const int CREATE_WEAPON = 5;
-    private const int MAKE_SPEED_UP_BUTTON_TEXT = 6;
-    private const int WEAPON_LEVEL_UP_BUTTON_TEXT = 7;
-    private const int NOW_CAN_MAKE_UP_MAX_BUTTON_TEXT = 8;
-    private const int CAN_HAS_WEAPON_UP_BUTTON_TEXT = 9;
+    // 어빌리티 텍스트 인덱스
+    private const int ATTACK_POWER_INDEX = 0;
+    private const int MAKE_SPEED_INDEX = 1;
+    private const int WEAPON_LEVEL_INDEX = 2;
+    private const int NOW_CAN_Max_MAKE_INDEX = 3;
+    private const int CAN_HAS_WEAPON_INDEX = 4;
+    private const int CREATE_WEAPON_INDEX = 5;
+    private const int MAKE_SPEED_UP_BUTTON_TEXT_INDEX = 6;
+    private const int WEAPON_LEVEL_UP_BUTTON_TEXT_INDEX = 7;
+    private const int NOW_CAN_MAKE_UP_MAX_BUTTON_TEXT_INDEX = 8;
+    private const int CAN_HAS_WEAPON_UP_BUTTON_TEXT_INDEX = 9;
 
+    // 골드 텍스트 인덱스
+    private const int COLLECT_GOLD_TEXT_INDEX = 0;
+    private const int MY_GOLD_TEXT_INDEX = 1;
 
     // 텍스트
-    private const string MAX = "Max";
+    private const string MAX_TEXT = "Max";
     private const string EQUIP_WEAPON_TEXT = "Equip Weapon Level : ";
+    private const string COLLECT_GOLD_TEXT = "Collect Gold : ";
+    private const string MY_GOLD_TEXT = "My Gold : ";
 
     // 어빌리티 올라가는 수치
     private const int UP_VALUE_INT = 1;
@@ -65,6 +73,9 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
     private Vector2 _posX = new Vector2(SORT_POS_X, 0f);
     private Vector2 _posY = new Vector2(-4f, SORT_POS_Y);
 
+    // 내가 현재 소지한 골드
+    private int _myGold;
+
     private void Awake()
     {
         foreach (Button button in _buttons)
@@ -72,28 +83,29 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
             button.onClick.RemoveAllListeners();
         }
 
-        _buttons[CREATE_WEAPON_BUTTON].onClick.AddListener(CreateWeapon);
-        _buttons[ABILITY_UI_BUTTON].onClick.AddListener(() => MenuButtonClick(STAGE_PANEL, false, ABILITY_PANEL, true));
-        _buttons[MERGE_UI_BUTTON].onClick.AddListener(() => MenuButtonClick(STAGE_PANEL, false, ABILITY_PANEL, false));
-        _buttons[STAGE_UI_BUTTON].onClick.AddListener(() => MenuButtonClick(STAGE_PANEL, true, ABILITY_PANEL, false));
-        _buttons[ATTACK_POWER_UP_BUTTON].onClick.AddListener(() => ClickAttackPowerUpButton(UP_VALUE_INT));
-        _buttons[MAKE_SPEED_UP_BUTTON].onClick.AddListener(() => ClickMakeSpeedUPButton(UP_VALUE_INT));
-        _buttons[WEAPON_LEVEL_UP_BUTTON].onClick.AddListener(() => ClickWeaponLevelUpButton(UP_VALUE_INT));
-        _buttons[NOW_CAN_MAKE_UP_MAX_BUTTON].onClick.AddListener(() => ClickNowCanMakeMaxUpButton(UP_VALUE_INT));
-        _buttons[CAN_HAS_WEAPON_UP_BUTTON].onClick.AddListener(() => ClickCanHasWeaponUpButton(UP_VALUE_INT));
-        _buttons[SORT_BUTTON].onClick.AddListener(() => ClickSortButton(ref _sortList));
+        _buttons[CREATE_WEAPON_BUTTON_INDEX].onClick.AddListener(CreateWeapon);
+        _buttons[ABILITY_UI_BUTTON_INDEX].onClick.AddListener(() => MenuButtonClick(STAGE_PANEL_INDEX, false, ABILITY_PANEL_INDEX, true));
+        _buttons[MERGE_UI_BUTTON_INDEX].onClick.AddListener(() => MenuButtonClick(STAGE_PANEL_INDEX, false, ABILITY_PANEL_INDEX, false));
+        _buttons[STAGE_UI_BUTTON_INDEX].onClick.AddListener(() => MenuButtonClick(STAGE_PANEL_INDEX, true, ABILITY_PANEL_INDEX, false));
+        _buttons[ATTACK_POWER_UP_BUTTON_INDEX].onClick.AddListener(() => ClickAttackPowerUpButton(UP_VALUE_INT));
+        _buttons[MAKE_SPEED_UP_BUTTON_INDEX].onClick.AddListener(() => ClickMakeSpeedUPButton(UP_VALUE_INT));
+        _buttons[WEAPON_LEVEL_UP_BUTTON_INDEX].onClick.AddListener(() => ClickWeaponLevelUpButton(UP_VALUE_INT));
+        _buttons[NOW_CAN_MAKE_UP_MAX_BUTTON_INDEX].onClick.AddListener(() => ClickNowCanMakeMaxUpButton(UP_VALUE_INT));
+        _buttons[CAN_HAS_WEAPON_UP_BUTTON_INDEX].onClick.AddListener(() => ClickCanHasWeaponUpButton(UP_VALUE_INT));
+        _buttons[SORT_BUTTON_INDEX].onClick.AddListener(() => ClickSortButton(ref _sortList));
+        _buttons[COLLECT_GOLD_BUTTON_INDEX].onClick.AddListener(ClickCollectGoldButton);
     }
 
     private void Start()
     {
-        UpdateText(_abilityTexts[ATTACK_POWER], string.Empty, Ability.Instance.AttackPower);
-        UpdateText(_abilityTexts[MAKE_SPEED], string.Empty, Ability.Instance.MakeSpeed);
-        UpdateText(_abilityTexts[WEAPON_LEVEL], string.Empty, Ability.Instance.WeaponLevel);
-        UpdateText(_abilityTexts[NOW_CAN_Max_MAKE], string.Empty, Ability.Instance.NowCanMakeCount);
-        UpdateText(_abilityTexts[CAN_HAS_WEAPON], string.Empty, Ability.Instance.CanHasWeapon);
-        UpdateText(_abilityTexts[CREATE_WEAPON], Ability.Instance.NowCanMakeCount.ToString() + " / " + Ability.Instance.NowCanMakeMaxCount.ToString());
-
-
+        UpdateText(_abilityTexts[ATTACK_POWER_INDEX], string.Empty, Ability.Instance.AttackPower);
+        UpdateText(_abilityTexts[MAKE_SPEED_INDEX], string.Empty, Ability.Instance.MakeSpeed);
+        UpdateText(_abilityTexts[WEAPON_LEVEL_INDEX], string.Empty, Ability.Instance.WeaponLevel);
+        UpdateText(_abilityTexts[NOW_CAN_Max_MAKE_INDEX], string.Empty, Ability.Instance.NowCanMakeCount);
+        UpdateText(_abilityTexts[CAN_HAS_WEAPON_INDEX], string.Empty, Ability.Instance.CanHasWeapon);
+        UpdateText(_abilityTexts[CREATE_WEAPON_INDEX], Ability.Instance.NowCanMakeCount.ToString() + " / " + Ability.Instance.NowCanMakeMaxCount.ToString());
+        UpdateText(_goldText[COLLECT_GOLD_TEXT_INDEX], COLLECT_GOLD_TEXT, _gold.CollectMyGold);
+        UpdateText(_goldText[MY_GOLD_TEXT_INDEX], MY_GOLD_TEXT, _myGold);
     }
 
     /// <summary>
@@ -119,7 +131,7 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
 
             --Ability.Instance.NowCanMakeCount;
 
-            _abilityTexts[CREATE_WEAPON].text = Ability.Instance.NowCanMakeCount.ToString() + " / " + Ability.Instance.NowCanMakeMaxCount.ToString();
+            _abilityTexts[CREATE_WEAPON_INDEX].text = Ability.Instance.NowCanMakeCount.ToString() + " / " + Ability.Instance.NowCanMakeMaxCount.ToString();
         }
         else
         {
@@ -185,7 +197,7 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
     {
         Ability.Instance.AttackPower += value;
 
-        UpdateText(_abilityTexts[ATTACK_POWER], string.Empty, Ability.Instance.AttackPower);
+        UpdateText(_abilityTexts[ATTACK_POWER_INDEX], string.Empty, Ability.Instance.AttackPower);
     }
 
     /// <summary>
@@ -198,11 +210,11 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
 
         if (Ability.Instance.MaxMakeSpeed - value < Ability.Instance.MakeSpeed)
         {
-            _buttons[MAKE_SPEED_UP_BUTTON].enabled = false;
-            _abilityTexts[MAKE_SPEED_UP_BUTTON_TEXT].text = MAX;
+            _buttons[MAKE_SPEED_UP_BUTTON_INDEX].enabled = false;
+            _abilityTexts[MAKE_SPEED_UP_BUTTON_TEXT_INDEX].text = MAX_TEXT;
         }
 
-        UpdateText(_abilityTexts[MAKE_SPEED], string.Empty, Ability.Instance.MakeSpeed);
+        UpdateText(_abilityTexts[MAKE_SPEED_INDEX], string.Empty, Ability.Instance.MakeSpeed);
     }
 
     /// <summary>
@@ -223,11 +235,11 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
 
         if (Ability.Instance.MaxWeaponLevel - value < Ability.Instance.WeaponLevel)
         {
-            _buttons[WEAPON_LEVEL_UP_BUTTON].enabled = false;
-            _abilityTexts[WEAPON_LEVEL_UP_BUTTON_TEXT].text = MAX;
+            _buttons[WEAPON_LEVEL_UP_BUTTON_INDEX].enabled = false;
+            _abilityTexts[WEAPON_LEVEL_UP_BUTTON_TEXT_INDEX].text = MAX_TEXT;
         }
 
-        UpdateText(_abilityTexts[WEAPON_LEVEL], Ability.Instance.WeaponLevel.ToString());
+        UpdateText(_abilityTexts[WEAPON_LEVEL_INDEX], Ability.Instance.WeaponLevel.ToString());
 
         if (_clickAndDrop.IsEquip)
         {
@@ -245,12 +257,12 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
 
         if (Ability.Instance.MaxCanMake - value < Ability.Instance.NowCanMakeMaxCount)
         {
-            _buttons[NOW_CAN_MAKE_UP_MAX_BUTTON].enabled = false;
-            _abilityTexts[NOW_CAN_MAKE_UP_MAX_BUTTON_TEXT].text = MAX;
+            _buttons[NOW_CAN_MAKE_UP_MAX_BUTTON_INDEX].enabled = false;
+            _abilityTexts[NOW_CAN_MAKE_UP_MAX_BUTTON_TEXT_INDEX].text = MAX_TEXT;
         }
 
-        UpdateText(_abilityTexts[NOW_CAN_Max_MAKE], string.Empty, Ability.Instance.NowCanMakeMaxCount);
-        UpdateText(_abilityTexts[CREATE_WEAPON], Ability.Instance.NowCanMakeCount.ToString() + " / " + Ability.Instance.NowCanMakeMaxCount.ToString());
+        UpdateText(_abilityTexts[NOW_CAN_Max_MAKE_INDEX], string.Empty, Ability.Instance.NowCanMakeMaxCount);
+        UpdateText(_abilityTexts[CREATE_WEAPON_INDEX], Ability.Instance.NowCanMakeCount.ToString() + " / " + Ability.Instance.NowCanMakeMaxCount.ToString());
     }
 
     /// <summary>
@@ -263,11 +275,11 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
 
         if (Ability.Instance.MaxHasWeapon - value < Ability.Instance.CanHasWeapon)
         {
-            _buttons[CAN_HAS_WEAPON_UP_BUTTON].enabled = false;
-            _abilityTexts[CAN_HAS_WEAPON_UP_BUTTON_TEXT].text = MAX;
+            _buttons[CAN_HAS_WEAPON_UP_BUTTON_INDEX].enabled = false;
+            _abilityTexts[CAN_HAS_WEAPON_UP_BUTTON_TEXT_INDEX].text = MAX_TEXT;
         }
 
-        UpdateText(_abilityTexts[CAN_HAS_WEAPON], string.Empty, Ability.Instance.CanHasWeapon);
+        UpdateText(_abilityTexts[CAN_HAS_WEAPON_INDEX], string.Empty, Ability.Instance.CanHasWeapon);
     }
 
     /// <summary>
@@ -334,6 +346,21 @@ public class ButtonEvent : MonoBehaviour , ITextUpdate
                 break;
             }
         }
+    }
+
+    private void ClickCollectGoldButton()
+    {
+        if (_clickAndDrop.EquipWeaponLevel == 0)
+        {
+            return;
+        }
+
+        _myGold += _gold.CollectMyGold;
+        _gold.CollectMyGold -= _gold.CollectMyGold;
+
+        UpdateText(_goldText[COLLECT_GOLD_TEXT_INDEX], COLLECT_GOLD_TEXT, _gold.CollectMyGold);
+        UpdateText(_goldText[MY_GOLD_TEXT_INDEX], MY_GOLD_TEXT, _myGold);
+
     }
 
     public void UpdateText(TextMeshProUGUI text, string constStr = "", int? num = null)

@@ -4,16 +4,6 @@ using UnityEngine;
 
 public class Ability : SingletonBehaviour<Ability>
 {
-    /* 어빌리티 내용
-     * 
-     * 공격력 int 무기 레벨에 비례해서 올리면 될 것 같음
-     * 생산속도 증가 (델타타임에 곱해서 기준으로 생산속도를 증가시킬거임) flaot
-     * 제작가능한 레벨 
-     * 제작가능 최대치 int 
-     * 보유 가능한 무기 수 int 
-     * 
-     */
-    
     /// <summary>
     /// 공격력
     /// </summary>
@@ -57,7 +47,6 @@ public class Ability : SingletonBehaviour<Ability>
     /// 가질 수 있는 무기의 수
     /// </summary>
     public int CanHasWeapon { get; set; }
-
 
     private void Awake()
     {
