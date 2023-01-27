@@ -32,10 +32,5 @@ public class ObjectPool : SingletonBehaviour<ObjectPool>
 
         WeaponPool.AddRange(_weaponArr);
     }
-
-    // 화면 벗어나면 실행되는 메서드래
-    private void OnBecameInvisible()
-    {
-        
-    }
 }
+

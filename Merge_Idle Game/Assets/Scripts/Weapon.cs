@@ -30,6 +30,4 @@ public class Weapon : MonoBehaviour
             ++_originalLevel;
         }
     }
-
-    // 어빌리티로 최소 무기 레벨을 올리면 무기의 스프라이트를 바꿔줘야 함 
 }

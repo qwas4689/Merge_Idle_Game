@@ -44,7 +44,7 @@ public class Timer : MonoBehaviour , ITextUpdate
     /// </summary>
     private void CollectTimeDone()
     {
-        if (_collectTime < 60f)
+        if (_collectTime > 60f)
         {
             _collectTime -= _collectTime;
 

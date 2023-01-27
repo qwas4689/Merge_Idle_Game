@@ -27,6 +27,8 @@ public class ClickAndDrop : MonoBehaviour, ITextUpdate
     private const int ABILITY_PANEL = 0;
     private const int STAGE_PANEL = 1;
 
+    private const int NONE_WEAPON = 0;
+
     private const string EQUIP_WEAPON_TEXT = "Equip Weapon Level : ";
 
     private Vector2 _startPos = new Vector2(0, -3.3f);
@@ -40,134 +42,50 @@ public class ClickAndDrop : MonoBehaviour, ITextUpdate
     // 장착한 무기의 레벨
     public int EquipWeaponLevel { get; set; }
 
-    private const int NONE_WEAPON = 0;
 
     private void Update()
     {
-        // 지금 머지 메뉴창일 때 만
-        if (_panels[ABILITY_PANEL].activeSelf == false && _panels[STAGE_PANEL].activeSelf == false)
+        if (_panels[ABILITY_PANEL].activeSelf == true || _panels[STAGE_PANEL].activeSelf == true)
         {
-            if (Input.touchCount > 0)
+            return;
+        }
+
+        // 지금 머지 메뉴창일 때 만
+
+        if (Input.touchCount > 0)
+        {
+            _touch = Input.GetTouch(0);
+            _touchPos = Camera.main.ScreenToWorldPoint(_touch.position);
+
+            if (CanMoveArea(_touch))
             {
-                // 1회 터치만 받음
-                _touch = Input.GetTouch(0);
-                // 터치한 곳을 월드좌표로 받아 옴
-                _touchPos = Camera.main.ScreenToWorldPoint(_touch.position);
-
-                // 지금 UI가 생성 할 수 있는 UI면 이거 실행 아니면 return
-
-
-                // 무기가 있을 수 있는 위치만 터지를 받음
-                if (CanMoveArea(_touch))
+                switch (_touch.phase)
                 {
-                    // 터치 눌렀을 때
-                    if (_touch.phase == TouchPhase.Began)
-                    {
-                        // 무기를 터치했는지 확인
-                        for (int i = 0; i < Ability.Instance.MaxHasWeapon; ++i)
-                        {
-                            if (TouchWeapon(_touchPos, ObjectPool.Instance.WeaponPool[i].transform.position, TOUCH_OFFSET))
-                            {
-                                _select = ObjectPool.Instance.WeaponPool[i];
-                                break;
-                            }
-                        }
+                    case TouchPhase.Began:
 
-                        EndTouch();
-                    }
+                        TouchScreen();
 
-                    // 드래그 상태
-                    if (_touch.phase == TouchPhase.Moved)
-                    {
-                        // 영역을 벗어나면 드래그상태 풀림
-                        if (!CanMoveArea(_touch))
-                        {
-                            EndTouchAndClear();
-                        }
+                        break;
 
-                        // 선택된게 있을때만 움직임
-                        if (_select != null)
-                        {
-                            _select.transform.position = _touchPos;
-                        }
-                    }
+                    case TouchPhase.Moved:
 
-                    // 터치 땠을 때
-                    if (_touch.phase == TouchPhase.Ended)
-                    {
-                        if (_select != null)
-                        {
-                            if (_select.GetComponent<Weapon>().WeaponLevel != Ability.Instance.MaxWeaponLevel)
-                            {
-                                // 땠을 때 선택된 것과 인접한 위치에 무기가 있으면 머지 함
-                                for (int i = 0; i < Ability.Instance.MaxHasWeapon; ++i)
-                                {
-                                    if (TouchWeapon(_select.transform.position, ObjectPool.Instance.WeaponPool[i].transform.position, MERGE_OFFEST))
-                                    {
-                                        // 선택한 것은 탐색 제외
-                                        if (_select != ObjectPool.Instance.WeaponPool[i])
-                                        {
-                                            // 선택한 것과 영역 주변 영역의 무기레벨이 같으면 레벨업
-                                            if (_select.GetComponent<Weapon>().WeaponLevel == ObjectPool.Instance.WeaponPool[i].GetComponent<Weapon>().WeaponLevel)
-                                            {
-                                                ++ObjectPool.Instance.WeaponPool[i].GetComponent<Weapon>().WeaponLevel;
-                                                _select.transform.position = _startPos;
-                                                _select.SetActive(false);
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                        DragScreen();
 
-                            // 장비장착칸의 근처에서 터치를 땠는지
-                            if (TouchWeapon(_select.transform.position, _equipWeapon.position, EQUIP_OFFEST) && !IsEquip)
-                            {
-                                _select.transform.position = _equipWeapon.position;
+                        break;
 
-                                UpdateText(_equipWeaponLevelText, EQUIP_WEAPON_TEXT, _select.GetComponent<Weapon>().WeaponLevel);
+                    case TouchPhase.Ended:
 
-                                EquipWeaponLevel = _select.GetComponent<Weapon>().WeaponLevel;
+                        TouchOffScreen();
 
-                                IsEquip = true;
-                            }
-                            else
-                            {
-                                for (int i = 0; i < Ability.Instance.MaxHasWeapon; ++i)
-                                {
-                                    if (ObjectPool.Instance.WeaponPool[i].transform.position == _equipWeapon.position)
-                                    {
-                                        UpdateText(_equipWeaponLevelText, EQUIP_WEAPON_TEXT, ObjectPool.Instance.WeaponPool[i].GetComponent<Weapon>().WeaponLevel);
-
-                                        EquipWeaponLevel = ObjectPool.Instance.WeaponPool[i].GetComponent<Weapon>().WeaponLevel;
-
-                                        IsEquip = true;
-
-                                        break;
-                                    }
-
-                                    EquipWeaponLevel = NONE_WEAPON;
-
-                                    UpdateText(_equipWeaponLevelText);
-                                    IsEquip = false;
-                                }
-                            }
-
-                            // 무기를 옮긴거니 소트를 할 수 있음
-                            IsSort = false;
-                        }
-
-                        // 초기화 및 리스트 초기화
-                        EndTouchAndClear();
-                    }
-                }
-                else
-                {
-                    // 초기화
-                    Init();
+                        break;
                 }
             }
+            else
+            {
+                Init();
+            }
         }
+
     }
 
     /// <summary>
@@ -227,5 +145,123 @@ public class ClickAndDrop : MonoBehaviour, ITextUpdate
     public void UpdateText(TextMeshProUGUI text, string constStr = "", int? num = null)
     {
         text.text = constStr + num;
+    }
+
+    /// <summary>
+    /// 터치를 했을 때 실행
+    /// </summary>
+    private void TouchScreen()
+    {
+        for (int i = 0; i < Ability.Instance.MaxHasWeapon; ++i)
+        {
+            if (TouchWeapon(_touchPos, ObjectPool.Instance.WeaponPool[i].transform.position, TOUCH_OFFSET))
+            {
+                _select = ObjectPool.Instance.WeaponPool[i];
+                break;
+            }
+        }
+
+        EndTouch();
+    }
+
+    /// <summary>
+    /// 드래그 중일 때 실행
+    /// </summary>
+    private void DragScreen()
+    {
+        // 영역을 벗어나면 드래그상태 풀림
+        if (!CanMoveArea(_touch))
+        {
+            EndTouchAndClear();
+        }
+
+        // 선택된게 있을때만 움직임
+        if (_select != null)
+        {
+            _select.transform.position = _touchPos;
+        }
+    }
+
+    /// <summary>
+    /// 터치가 끝났을 때 실행
+    /// </summary>
+    private void TouchOffScreen()
+    {
+        if (_select == null)
+        {
+            EndTouchAndClear();
+            return;
+        }
+
+        if (_select.GetComponent<Weapon>().WeaponLevel == Ability.Instance.MaxWeaponLevel)
+        {
+            return;
+        }
+
+        // 땠을 때 선택된 것과 인접한 위치에 무기가 있으면 머지 함
+        for (int i = 0; i < Ability.Instance.MaxHasWeapon; ++i)
+        {
+            if (TouchWeapon(_select.transform.position, ObjectPool.Instance.WeaponPool[i].transform.position, MERGE_OFFEST))
+            {
+                // 선택한 것은 탐색 제외
+                if (_select != ObjectPool.Instance.WeaponPool[i])
+                {
+                    // 선택한 것과 영역 주변 영역의 무기레벨이 같으면 레벨업
+                    if (_select.GetComponent<Weapon>().WeaponLevel == ObjectPool.Instance.WeaponPool[i].GetComponent<Weapon>().WeaponLevel)
+                    {
+                        ++ObjectPool.Instance.WeaponPool[i].GetComponent<Weapon>().WeaponLevel;
+                        _select.transform.position = _startPos;
+                        _select.SetActive(false);
+                        break;
+                    }
+                }
+            }
+        }
+
+        // 장비장착칸의 근처에서 터치를 땠는지
+        if (TouchWeapon(_select.transform.position, _equipWeapon.position, EQUIP_OFFEST) && !IsEquip)
+        {
+            _select.transform.position = _equipWeapon.position;
+
+            UpdateEquipWeaponText(_select.GetComponent<Weapon>().WeaponLevel, true);
+        }
+        else
+        {
+            for (int i = 0; i < Ability.Instance.MaxHasWeapon; ++i)
+            {
+                if (ObjectPool.Instance.WeaponPool[i].transform.position == _equipWeapon.position)
+                {
+                    UpdateEquipWeaponText(ObjectPool.Instance.WeaponPool[i].GetComponent<Weapon>().WeaponLevel, true);
+
+                    break;
+                }
+
+                EquipWeaponLevel = NONE_WEAPON;
+
+                UpdateText(_equipWeaponLevelText);
+                IsEquip = false;
+            }
+        }
+
+        // 무기를 옮긴거니 소트를 할 수 있음
+        IsSort = false;
+
+
+        // 초기화 및 리스트 초기화
+        EndTouchAndClear();
+    }
+
+    /// <summary>
+    /// 장착한 장비의 텍스트 최신화
+    /// </summary>
+    /// <param name="weaponLevel">바꿀 무기의 레벨</param>
+    /// <param name="isEquip">장착여부</param>
+    private void UpdateEquipWeaponText(int weaponLevel, bool isEquip)
+    {
+        UpdateText(_equipWeaponLevelText, EQUIP_WEAPON_TEXT, weaponLevel);
+
+        EquipWeaponLevel = weaponLevel;
+
+        IsEquip = isEquip;
     }
 }
